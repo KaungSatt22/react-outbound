@@ -1,7 +1,21 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const Outbound = () => {
+  const location = useLocation();
+  const { modal } = location.state || {};
+
+  useEffect(() => {
+    if (modal) {
+      Swal.fire({
+        title: "DONE!",
+        text: "Payment Successfully",
+        icon: "success",
+      });
+    }
+  }, [modal]);
+
   return (
     <div className="bg-[#f0f4f9]">
       <div className="max-w-[1200px] mx-auto py-10">

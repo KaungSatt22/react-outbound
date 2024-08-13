@@ -10,6 +10,7 @@ import {
 import { getAllCountry } from "../api/country";
 import Logo from "../assets/pdflogo.jpg";
 import body from "../assets/myanma_insurnace_8-images-0-b.jpg";
+import qr from "../assets/qr.png";
 import PAGE1 from "../assets/myanma_insurnace_8-images-1.jpg";
 import PAGE2 from "../assets/myanma_insurnace_8-images-2.jpg";
 import PAGE3 from "../assets/myanma_insurnace_8-images-3.jpg";
@@ -29,7 +30,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 5,
+    margin: "5px 0",
   },
   label: {
     width: "40%",
@@ -47,10 +48,17 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginLeft: 70,
   },
+  imgcard: {
+    marginLeft: 70,
+    fontSize: 8,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
   certificateTitle: {
     textAlign: "left",
     fontSize: 12,
-    margin: "20px 0",
+    margin: "10px 0",
     marginLeft: 70,
   },
   detailContainer: {
@@ -87,14 +95,29 @@ const styles = StyleSheet.create({
     margin: 5,
     fontSize: 10,
     fontWeight: "bold",
+    textAlign: "center",
   },
   tableCell: {
     margin: 5,
     fontSize: 10,
+    textAlign: "center",
   },
   block: {
     display: "block",
     marginBottom: 2,
+  },
+  printdate: {
+    display: "flex",
+    fontSize: 8,
+    flexDirection: "row",
+    gap: 15,
+    margin: "0 40px",
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
+  },
+  qrImg: {
+    width: 100,
+    height: 100,
   },
 });
 
@@ -163,7 +186,9 @@ const MyDocument = ({ item }) => {
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.label}>
-                  Buy for yourself(The passport Holder)
+                  {item.forChild
+                    ? "Buy for the child travel together with this passport holder(Child is not holding a valid passport)"
+                    : "Buy for yourself(The passport Holder)"}
                 </Text>
               </View>
             </View>
@@ -272,6 +297,13 @@ const MyDocument = ({ item }) => {
           <View>
             <Image src={body} />
           </View>
+          <View style={styles.imgcard}>
+            <Image src={qr} style={styles.qrImg} />
+            <View style={styles.printdate}>
+              <Text>Print Date:</Text>
+              <Text>{formatDate(item.submittedDate)}</Text>
+            </View>
+          </View>
         </View>
       </Page>
       {[
@@ -289,6 +321,10 @@ const MyDocument = ({ item }) => {
       ].map((page, index) => (
         <Page key={index} size="A4">
           <Image src={page} />
+          <View style={styles.printdate}>
+            <Text>Print Date:</Text>
+            <Text>{formatDate(item.submittedDate)}</Text>
+          </View>
         </Page>
       ))}
     </Document>

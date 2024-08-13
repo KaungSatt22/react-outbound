@@ -125,7 +125,7 @@ const EmquiryPage = () => {
                       No.
                     </th>
                     <th className="bg-[#074DA1] border text-white  py-2">
-                      Order Id
+                      Certificate No.
                     </th>
                     <th className="bg-[#074DA1] border text-white  py-2">
                       Insured Name

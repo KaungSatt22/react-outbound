@@ -3,11 +3,8 @@ import Self from "../assets/self1.svg";
 import Agent from "../assets/agent1.svg";
 import Association from "../assets/agent_assoc.png";
 import { IoCloseOutline } from "react-icons/io5";
-import AYA from "../assets/aya_pay_icon.jpg";
-import KBZ from "../assets/kbz_pay_icon.png";
-import MPU from "../assets/mpu_icon.png";
-import CB from "../assets/cb_pay_icon.png";
-import OKDollar from "../assets/ok_dollar_icon.png";
+import Visa from "../assets/visa_icon.png";
+import Master from "../assets/master_card.png";
 import Modal from "../components/Modal";
 import { GiConfirmed } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
@@ -84,9 +81,9 @@ const UsdFormPage = () => {
       policyStartDate: insuredPerson?.policyStartDate || "",
       insuredPersonAge: insuredPerson?.insuredPersonAge || "",
       packages: insuredPerson?.packages || "",
-      paymentMethod: insuredPerson?.paymentMethod || "mpu",
+      paymentMethod: insuredPerson?.paymentMethod || "visa",
       agentId: insuredPerson?.agentId || "",
-      buy: insuredPerson?.buy || "mmk",
+      buy: insuredPerson?.buy || "usd",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
@@ -118,19 +115,10 @@ const UsdFormPage = () => {
     setAssociation("");
     setAgentInputBox(false);
     setAssociationInputBox(false);
-    if (agentNameRef?.current?.value) {
-      agentNameRef.current.value = "";
-    }
-    if (agentLicenseNumRef?.current?.value) {
-      agentLicenseNumRef.current.value = "";
-    }
-    if (associationLicenseNumRef?.current?.value) {
-      associationLicenseNumRef.current.value = "";
-    }
-    if (associationPasswordRef?.current?.value) {
-      associationPasswordRef.current.value = "";
-    }
-    formik.setFieldValue("agentId", "");
+    agentNameRef.current.value = "";
+    agentLicenseNumRef.current.value = "";
+    associationLicenseNumRef.current.value = "";
+    associationPasswordRef.current.value = "";
   };
 
   const handlePayment = (event) => {
@@ -138,6 +126,7 @@ const UsdFormPage = () => {
       event.currentTarget.getAttribute("data-value");
     formik.setFieldValue("paymentMethod", selectedPaymentMethod);
   };
+  setPremiumRate;
   const getPremiumRate = async () => {
     try {
       const form = new FormData();
@@ -212,6 +201,7 @@ const UsdFormPage = () => {
       setAssociation(res.data === "" ? "error" : res.data);
       formik.setFieldValue("agentId", res.data?.id);
       if (res.data) {
+        console.log("Result" + res);
         closeAssociationModal();
         setAssociationInputBox(true);
       }
@@ -219,6 +209,7 @@ const UsdFormPage = () => {
       console.log(err);
     }
   };
+  console.log(JSON.stringify(association));
   const goto = () => {
     navigate("/confirm");
     dispatch(addInsuredPerson(formik.values));
@@ -231,7 +222,7 @@ const UsdFormPage = () => {
         onSubmit={formik.handleSubmit}
       >
         <h2 className="mx-auto text-center text-2xl font-bold text-[#074DA1] py-5">
-          Outbound Travel Accident Insurance (MMK)
+          Outbound Travel Accident Insurance (USD)
         </h2>
         <div className="shadow p-10 bg-white text-[#074DA1]">
           <h3 className="underline text-lg font-bold">
@@ -628,9 +619,9 @@ const UsdFormPage = () => {
                     value={formik.values.packages}
                   >
                     <option value="">Select One</option>
-                    <option value="30000000">30,000,000 MMK</option>
-                    <option value="90000000">90,000,000 MMK</option>
-                    <option value="150000000">150,000,000 MMK</option>
+                    <option value="10000">USD 10,000</option>
+                    <option value="30000">USD 30,000</option>
+                    <option value="50000">USD 50,000</option>
                   </select>
                 </div>
                 {formik.touched.packages && formik.errors.packages ? (
@@ -1280,7 +1271,7 @@ const UsdFormPage = () => {
                     <input
                       type="text"
                       placeholder="Agent Name"
-                      value={agent.agentName}
+                      value={association.agentName}
                       className="p-2 w-full mt-2 uppercase"
                       readOnly
                     />
@@ -1294,7 +1285,7 @@ const UsdFormPage = () => {
                     <input
                       type="text"
                       placeholder="Agent License Number"
-                      value={agent.agentLicenseNumber}
+                      value={association.agentLicenseNumber}
                       className="p-2 w-full mt-2 uppercase"
                       readOnly
                     />
@@ -1320,7 +1311,7 @@ const UsdFormPage = () => {
                     <input
                       type="text"
                       placeholder="Agent Name"
-                      value={association.agentName}
+                      value={agent.agentName}
                       className="p-2 w-full mt-2 uppercase"
                     />
                   </div>
@@ -1333,7 +1324,7 @@ const UsdFormPage = () => {
                     <input
                       type="text"
                       placeholder="Agent License Number"
-                      value={association.agentLicenseNumber}
+                      value={agent.agentLicenseNumber}
                       className="p-2 w-full mt-2 uppercase"
                     />
                   </div>
@@ -1475,7 +1466,7 @@ const UsdFormPage = () => {
               <tr className="align-top border-b border-white">
                 <td className="px-4 py-2 text-gray-700">Insured For</td>
                 <td className="px-4 py-2 font-bold border-white">
-                  {formik.values.forChild
+                  {formik.values.forChild === "child"
                     ? "Buy for child"
                     : "Buy for this passport holder"}
                 </td>
@@ -1483,13 +1474,13 @@ const UsdFormPage = () => {
               <tr className="border-b border-white">
                 <td className=" px-4 py-2 text-gray-700">Premium Amount</td>
                 <td className=" px-4 py-2 font-bold">
-                  {premiumRate?.rates} MMK
+                  {premiumRate?.rates} USD
                 </td>
               </tr>
               <tr className="border-b border-white">
                 <td className=" px-4 py-2 text-gray-700">Net Premium</td>
                 <td className=" px-4 py-2 font-bold">
-                  {premiumRate?.rates} MMK
+                  {premiumRate?.rates} USD
                 </td>
               </tr>
               <tr className="border-b border-white">
@@ -1505,7 +1496,7 @@ const UsdFormPage = () => {
               <tr className="border-b border-white">
                 <td className=" px-4 py-2 text-gray-700">Packages</td>
                 <td className=" px-4 py-2 font-bold">
-                  {formatCurrency(formik.values.packages)} MMK
+                  {formatCurrency(formik.values.packages)} USD
                 </td>
               </tr>
               <tr className="border-b border-white">
@@ -1539,87 +1530,35 @@ const UsdFormPage = () => {
               <div
                 className="relative"
                 name="paymentMethod"
-                data-value="mpu"
+                data-value="visa"
                 onClick={handlePayment}
               >
                 <img
-                  src={MPU}
+                  src={Visa}
                   alt=""
                   className={`border cursor-pointer rounded ${
-                    formik.values.paymentMethod === "mpu" && "border-[#074DA1]"
+                    formik.values.paymentMethod === "visa" && "border-[#074DA1]"
                   }`}
                 />
-                {formik.values.paymentMethod === "mpu" && (
+                {formik.values.paymentMethod === "visa" && (
                   <GiConfirmed className="absolute -top-2 right-0" size={25} />
                 )}
               </div>
               <div
                 className="relative"
                 name="paymentMethod"
-                data-value="cb"
+                data-value="master"
                 onClick={handlePayment}
               >
                 <img
-                  src={CB}
+                  src={Master}
                   alt=""
                   className={`border cursor-pointer rounded ${
-                    formik.values.paymentMethod === "cb" && "border-[#074DA1]"
-                  }`}
-                />
-                {formik.values.paymentMethod === "cb" && (
-                  <GiConfirmed className="absolute -top-2 right-0" size={25} />
-                )}
-              </div>
-
-              <div
-                className="relative"
-                name="paymentMethod"
-                data-value="kbz"
-                onClick={handlePayment}
-              >
-                <img
-                  src={KBZ}
-                  alt=""
-                  className={`border cursor-pointer rounded ${
-                    formik.values.paymentMethod === "kbz" && "border-[#074DA1]"
-                  }`}
-                />
-                {formik.values.paymentMethod === "kbz" && (
-                  <GiConfirmed className="absolute -top-2 right-0" size={25} />
-                )}
-              </div>
-              <div
-                className="relative"
-                name="paymentMethod"
-                data-value="okdollar"
-                onClick={handlePayment}
-              >
-                <img
-                  src={OKDollar}
-                  alt=""
-                  className={`border cursor-pointer rounded ${
-                    formik.values.paymentMethod === "okdollar" &&
+                    formik.values.paymentMethod === "master" &&
                     "border-[#074DA1]"
                   }`}
                 />
-                {formik.values.paymentMethod === "okdollar" && (
-                  <GiConfirmed className="absolute -top-2 right-0" size={25} />
-                )}
-              </div>
-              <div
-                className="relative"
-                name="paymentMethod"
-                data-value="aya"
-                onClick={handlePayment}
-              >
-                <img
-                  src={AYA}
-                  alt=""
-                  className={`border cursor-pointer rounded ${
-                    formik.values.paymentMethod === "aya" && "border-[#074DA1]"
-                  }`}
-                />
-                {formik.values.paymentMethod === "aya" && (
+                {formik.values.paymentMethod === "master" && (
                   <GiConfirmed className="absolute -top-2 right-0" size={25} />
                 )}
               </div>

@@ -6,10 +6,11 @@ import {
 } from "../features/insuranceperson/personSlice";
 import { getAllCountry } from "../api/country";
 import { postInsuranced } from "../api/insuranced";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { formatCurrency } from "../ultils/formatCurrency";
 import { generateCertificate } from "../ultils/dateFormat";
 import { IoReturnUpBack } from "react-icons/io5";
+import ScrollTop from "../components/ScrollTop";
 
 const ConfirmationPage = () => {
   const { insuredPerson } = useSelector(insuredPersonState);
@@ -20,119 +21,72 @@ const ConfirmationPage = () => {
   const dispatch = useDispatch();
   const handleConfirm = async () => {
     const form = new FormData();
-    form.append("insuredPerson.name", insuredPerson.insuredPersonName);
+    form.append("insuredPersonName", insuredPerson.insuredPersonName);
+    form.append("insuredPersonDOB", insuredPerson.insuredPersonDOB);
+    form.append("insuredPersonGender", insuredPerson.insuredPersonGender);
     form.append(
-      "insuredPerson.dateOfBirth",
-      insuredPerson.insuredPersonDateOfBirth
+      "insuredPersonContactPhoneNo",
+      `(${insuredPerson.insuredPersonContactPhoneCode}) ${insuredPerson.insuredPersonContactPhoneNo}`
     );
-    form.append("insuredPerson.gender", insuredPerson.insuredPersonGender);
-    form.append(
-      "insuredPerson.contactPhoneNo",
-      `(${insuredPerson.insuredContactPhoneCode}) ${insuredPerson.insuredPersonContactPhoneNo}`
-    );
-    form.append(
-      "insuredPerson.foreignContactNo",
-      `(${insuredPerson.insuredContactPhoneCode}) ${insuredPerson.insuredPersonForeignContactNo}`
-    );
-    form.append(
-      "insuredPerson.fatherName",
-      insuredPerson.insuredPersonFatherName
-    );
-    form.append("insuredPerson.race", insuredPerson.insuredPersonRace);
-    form.append(
-      "insuredPerson.occupation",
-      insuredPerson.insuredPersonOccupation
-    );
-    form.append(
-      "insuredPerson.maritalStatus",
-      insuredPerson.insuredPersonMaritalStatus
-    );
-    form.append(
-      "insuredPerson.emailAddress",
-      insuredPerson.insuredPersonEmailAddress
-    );
-    form.append(
-      "insuredPerson.addressInMyanmar",
-      insuredPerson.insuredPersonAddressinMyanmar
-    );
-    form.append(
-      "insuredPerson.addressAbroad",
-      insuredPerson.insuredPersonAddressAbroad
-    );
-    form.append(
-      "insuredPerson.passportNumber",
-      insuredPerson.insuredPersonPassportNumber
-    );
-    form.append(
-      "insuredPerson.passportIssuedDate",
-      insuredPerson.insuredPersonPassportissuedDate
-    );
-    form.append("insuredPerson.NRC", insuredPerson.insuredPersonNRC);
-    form.append("insuredPerson.forChild", insuredPerson.insuredPersonforChild);
-    form.append("journeyToId", insuredPerson.journeyToId);
-    form.append("destinationCountryId", insuredPerson.destinationCountryId);
+    if (insuredPerson.foreignContactPhoneNo) {
+      form.append(
+        "foreignContactPhoneNo",
+        `(${insuredPerson.foreignContactPhoneCode}) ${insuredPerson.foreignContactPhoneNo}`
+      );
+    }
+    form.append("fatherName", insuredPerson.fatherName);
+    form.append("race", insuredPerson.race);
+    form.append("occupation", insuredPerson.occupation);
+    form.append("maritalStatus", insuredPerson.maritalStatus);
+    form.append("insuredPersonEmail", insuredPerson.insuredPersonEmail);
+    form.append("addressInMyanmar", insuredPerson.addressInMyanmar);
+    form.append("addressAbroad", insuredPerson.addressAbroad);
+    form.append("passportNumber", insuredPerson.passportNumber);
+    form.append("passportIssuedDate", insuredPerson.passportIssuedDate);
+    form.append("insuredPersonNRC", insuredPerson.insuredPersonNRC);
+    form.append("forChild", insuredPerson.forChild);
+    form.append("journeyTo", insuredPerson.journeyTo);
+    form.append("countryForDestination", insuredPerson.countryForDestination);
     form.append("beneficiaryName", insuredPerson.beneficiaryName);
     form.append("beneficiaryDOB", insuredPerson.beneficiaryDOB);
     form.append(
-      "beneficiaryInfomation.relationship",
-      insuredPerson.beneficiaryInfomationRelationship
+      "beneficiaryRelationship",
+      insuredPerson.beneficiaryRelationship
     );
     form.append(
-      "beneficiaryPhoneNo",
-      `(${insuredPerson.beneficiaryPhoneCode}) ${insuredPerson.beneficiaryPhoneNo}`
+      "beneficiaryContactPhoneNo",
+      `(${insuredPerson.beneficiaryContactPhoneCode}) ${insuredPerson.beneficiaryContactPhoneNo}`
     );
-    form.append(
-      "beneficiaryInfomation.nrc",
-      insuredPerson.beneficiaryInfomationNRC
-    );
-    form.append(
-      "beneficiaryInfomation.email",
-      insuredPerson.beneficiaryInfomationEmail
-    );
-    form.append(
-      "beneficiaryInfomation.address",
-      insuredPerson.beneficiaryInfomationAddress
-    );
-    form.append("childInformation.childName", insuredPerson.childName);
+    form.append("beneficiaryNRC", insuredPerson.beneficiaryNRC);
+    form.append("beneficiaryEmail", insuredPerson.beneficiaryEmail);
+    form.append("beneficiaryAddress", insuredPerson.beneficiaryAddress);
+    form.append("childName", insuredPerson.childName);
     form.append("childDOB", insuredPerson.childDOB);
     form.append("childGender", insuredPerson.childGender);
-    form.append(
-      "childInformation.guardianceName",
-      insuredPerson.childInformationGuardianceName
-    );
+    form.append("guardianceName", insuredPerson.guardianceName);
     form.append("childRelationship", insuredPerson.childRelationship);
     if (insuredPerson.agentId) {
       form.append("agentId", insuredPerson.agentId);
     }
-    form.append("proposal.certificateNumber", generateCertificate());
-    form.append("proposal.coveragePlan", insuredPerson.proposalCoveragePlan);
-    form.append("proposal.rates", insuredPerson.proposalRates);
-    form.append(
-      "proposal.estimatedDepartureDate",
-      insuredPerson.proposalEstimatedDepartureDate
-    );
-    form.append(
-      "proposal.policyStartDate",
-      insuredPerson.proposalPolicyStartDate
-    );
-    form.append("proposal.serviceAmount", serviceAmount);
-    form.append("proposal.age", insuredPerson.proposalAge);
-    form.append("proposal.packages", insuredPerson.proposalPackages);
-    form.append(
-      "passportIssuedCountryId",
-      insuredPerson.insuredPersonPassportissuedCountry
-    );
+    // form.append("certificateNumber", generateCertificate());
+    form.append("coveragePlan", insuredPerson.coveragePlan);
+    form.append("rates", insuredPerson.rates);
+    form.append("estimatedDepartureDate", insuredPerson.estimatedDepartureDate);
+    form.append("policyStartDate", insuredPerson.policyStartDate);
+    form.append("serviceAmount", serviceAmount);
+    form.append("insuredPersonAge", insuredPerson.insuredPersonAge);
+    form.append("packages", insuredPerson.packages);
+    form.append("passportIssuedCountry", insuredPerson.passportIssuedCountry);
 
     try {
       await postInsuranced(form);
       dispatch(resetInsuredPerson());
-      navigate("/");
+      navigate("/", { state: { modal: true } });
     } catch (err) {
       console.log(err.message);
     }
   };
   useEffect(() => {
-    window.scrollTo(0, 0);
     getCountries();
   }, []);
 
@@ -140,18 +94,17 @@ const ConfirmationPage = () => {
     try {
       let res = await getAllCountry();
       setJourney(
-        res.data.filter((country) => country.id == insuredPerson.journeyToId)[0]
+        res.data.filter((country) => country.id == insuredPerson.journeyTo)[0]
           ?.countryName
       );
       setDestinationCountry(
         res.data.filter(
-          (country) => country.id == insuredPerson.destinationCountryId
+          (country) => country.id == insuredPerson.countryForDestination
         )[0]?.countryName
       );
       setPassportIssuedCountry(
         res.data.filter(
-          (country) =>
-            country.id == insuredPerson.insuredPersonPassportissuedCountry
+          (country) => country.id == insuredPerson.passportIssuedCountry
         )[0]?.countryName
       );
     } catch (err) {
@@ -166,11 +119,11 @@ const ConfirmationPage = () => {
   const back = () => {
     navigate(-1);
   };
-  const serviceAmount = roundUp((insuredPerson.proposalRates * 3.627) / 100, 2);
-  const total = insuredPerson.proposalRates + +serviceAmount;
-  console.log(typeof insuredPerson.insuredPersonforChild);
+  const serviceAmount = roundUp((insuredPerson.rates * 3.627) / 100, 2);
+  const total = insuredPerson.rates + +serviceAmount;
   return (
     <div className="bg-[#f0f4f9] py-10 ">
+      <ScrollTop />
       <div className="w-[1200px] mx-auto bg-white p-5 rounded text-[]">
         <div className="flex justify-end">
           <div
@@ -203,7 +156,7 @@ const ConfirmationPage = () => {
                   Premium Amount
                 </td>
                 <td className="px-4 py-2">
-                  {insuredPerson.proposalRates}{" "}
+                  {insuredPerson.rates}{" "}
                   {insuredPerson.buy === "usd" ? "USD" : "MMK"}
                 </td>
               </tr>
@@ -245,16 +198,14 @@ const ConfirmationPage = () => {
                   <p>Passport Number</p>
                   <p>(နိုင်ငံကူးလက်မှတ်အမှတ်)</p>
                 </td>
-                <td className="px-4 py-2 ">
-                  {insuredPerson.insuredPersonPassportNumber}
-                </td>
+                <td className="px-4 py-2 ">{insuredPerson.passportNumber}</td>
               </tr>
               <tr className="border-b border-gray-300">
                 <td className="px-4 py-2 font-bold w-[350px]">
                   Passport Issued Date <p>(နိုင်ငံကူးလက်မှတ်ထုတ်ပေးသည့်နေ့)</p>
                 </td>
                 <td className="px-4 py-2">
-                  {insuredPerson.insuredPersonPassportissuedDate}
+                  {insuredPerson.passportIssuedDate}
                 </td>
               </tr>
               <tr>
@@ -276,7 +227,9 @@ const ConfirmationPage = () => {
               <tr className="border-b border-gray-300 w-[350px]">
                 <td className="px-4 py-2 font-bold">Insured For</td>
                 <td className="px-4 py-2 uppercase">
-                  Buy for this passport holder
+                  {insuredPerson.forChild
+                    ? "BUY FOR CHILD"
+                    : "BUY FOR THIS PASSPORT HOLDER"}
                 </td>
               </tr>
               <tr className="border-b border-gray-300">
@@ -285,9 +238,7 @@ const ConfirmationPage = () => {
                   <p>(အမည်(နိုင်ငံကူးလက်မှတ်ပါအမည်))</p>
                 </td>
                 <td className="px-4 py-2  uppercase">
-                  {insuredPerson.insuredPersonforChild
-                    ? insuredPerson.childName
-                    : insuredPerson.insuredPersonName}
+                  {insuredPerson.insuredPersonName}
                 </td>
               </tr>
               <tr className="border-b border-gray-300">
@@ -295,11 +246,7 @@ const ConfirmationPage = () => {
                   <p>Date of Birth (as per passport)</p>
                   <p>(မွေးသက္ကရာဇ်(နိုင်ငံကူးလက်မှတ်ပါမွေးသက္ကရာဇ်))</p>
                 </td>
-                <td className="px-4 py-2">
-                  {insuredPerson.insuredPersonforChild
-                    ? insuredPerson.childDOB
-                    : insuredPerson.insuredPersonDateOfBirth}
-                </td>
+                <td className="px-4 py-2">{insuredPerson.insuredPersonDOB}</td>
               </tr>
               <tr className="border-b border-gray-300">
                 <td className="px-4 py-2 font-bold w-[350px]">
@@ -307,9 +254,7 @@ const ConfirmationPage = () => {
                   <p>(ကျား/မ(နိုင်ငံကူးလက်မှတ်ပါ))</p>
                 </td>
                 <td className="px-4 py-2">
-                  {insuredPerson.insuredPersonforChild
-                    ? insuredPerson.childGender
-                    : insuredPerson.insuredPersonGender}
+                  {insuredPerson.insuredPersonGender}
                 </td>
               </tr>
               {insuredPerson.insuredPersonNRC && (
@@ -331,9 +276,43 @@ const ConfirmationPage = () => {
                   <p>(ထွက်ခွာမည့်နေ့(ခန့်မှန်းခြေ))</p>
                 </td>
                 <td className="px-4 py-2">
-                  {insuredPerson.proposalEstimatedDepartureDate}
+                  {insuredPerson.estimatedDepartureDate}
                 </td>
               </tr>
+              {insuredPerson.forChild && (
+                <>
+                  <tr className="border-b border-gray-300">
+                    <td className="px-4 py-2 font-bold w-[350px]">
+                      <p>Child Name</p>
+                      <p>(ကလေးအမည်)</p>
+                    </td>
+                    <td className="px-4 py-2 ">{insuredPerson.childName}</td>
+                  </tr>
+                  <tr className="border-b border-gray-300">
+                    <td className="px-4 py-2 font-bold w-[350px]">
+                      <p>Date of Birth (child)</p>
+                      <p>(မွေးနေ့သက္ကရာဇ်)</p>
+                    </td>
+                    <td className="px-4 py-2 ">{insuredPerson.childDOB}</td>
+                  </tr>
+                  <tr className="border-b border-gray-300">
+                    <td className="px-4 py-2 font-bold w-[350px]">
+                      <p>Gender (Child)</p>
+                      <p>ကျား/မ</p>
+                    </td>
+                    <td className="px-4 py-2 ">{insuredPerson.childGender}</td>
+                  </tr>
+                  <tr className="border-b border-gray-300">
+                    <td className="px-4 py-2 font-bold w-[350px]">
+                      <p>Relationship (Child)</p>
+                      <p>တော်စပ်ပုံ</p>
+                    </td>
+                    <td className="px-4 py-2 ">
+                      {insuredPerson.childRelationship}
+                    </td>
+                  </tr>
+                </>
+              )}
               <tr className="border-b border-gray-300">
                 <td className="px-4 py-2 font-bold w-[350px]">
                   <p>Journey From</p>
@@ -354,7 +333,7 @@ const ConfirmationPage = () => {
                   <p>(အာမခံသက်တမ်း)</p>
                 </td>
                 <td className="px-4 py-2 ">
-                  {insuredPerson.proposalCoveragePlan} Days
+                  {insuredPerson.coveragePlan} Days
                 </td>
               </tr>
               <tr className="border-b border-gray-300">
@@ -362,7 +341,7 @@ const ConfirmationPage = () => {
                   <p>Packages</p> <p>(ပက်ကေ့ချ်)</p>
                 </td>
                 <td className="px-4 py-2 ">
-                  {formatCurrency(insuredPerson.proposalPackages)}{" "}
+                  {formatCurrency(insuredPerson.packages)}{" "}
                   {insuredPerson.buy === "usd" ? "USD" : "MMK"}
                 </td>
               </tr>
@@ -370,16 +349,14 @@ const ConfirmationPage = () => {
                 <td className="px-4 py-2 font-bold w-[350px]">
                   <p>Policy Start Date</p> <p>(ပေါ်လစီစတင်မည့်နေ့)</p>
                 </td>
-                <td className="px-4 py-2">
-                  {insuredPerson.proposalPolicyStartDate}
-                </td>
+                <td className="px-4 py-2">{insuredPerson.policyStartDate}</td>
               </tr>
               <tr className="border-b border-gray-300">
                 <td className="px-4 py-2 font-bold w-[350px]">
                   <p>Contact Phone Number</p> <p>(ဆက်သွယ်ရမည့်ဖုန်းနံပါတ်)</p>
                 </td>
                 <td className="px-4 py-2">
-                  ({insuredPerson.insuredContactPhoneCode}){" "}
+                  ({insuredPerson.insuredPersonContactPhoneCode}){" "}
                   {insuredPerson.insuredPersonContactPhoneNo}
                 </td>
               </tr>
@@ -388,49 +365,43 @@ const ConfirmationPage = () => {
                   <p>Foreign Contact Number</p>{" "}
                   <p>(ဆက်သွယ်ရမည့်နိုင်ငံခြားဖုန်းနံပါတ်)</p>
                 </td>
-                <td className="px-4 py-2">
-                  ({insuredPerson.foreignContactPhoneCode}){" "}
-                  {insuredPerson.insuredPersonForeignContactNo}
-                </td>
+                {insuredPerson.foreignContactPhoneNo && (
+                  <td className="px-4 py-2">
+                    ({insuredPerson.foreignContactPhoneCode}){" "}
+                    {insuredPerson.foreignContactPhoneNo}
+                  </td>
+                )}
               </tr>
               <tr className="border-b border-gray-300">
                 <td className="px-4 py-2 font-bold w-[350px]">
                   <p>Father's Name</p> <p>(ဖခင်အမည်)</p>
                 </td>
-                <td className="px-4 py-2">
-                  {insuredPerson.insuredPersonFatherName}
-                </td>
+                <td className="px-4 py-2">{insuredPerson.fatherName}</td>
               </tr>
               <tr className="border-b border-gray-300">
                 <td className="px-4 py-2 font-bold w-[350px]">
                   <p>Race</p> <p>(လူမျိုး)</p>
                 </td>
-                <td className="px-4 py-2 ">
-                  {insuredPerson.insuredPersonRace}
-                </td>
+                <td className="px-4 py-2 ">{insuredPerson.race}</td>
               </tr>
               <tr className="border-b border-gray-300">
                 <td className="px-4 py-2 font-bold w-[350px]">
                   <p>Occupation</p> <p>(အလုပ်အကိုင်)</p>
                 </td>
-                <td className="px-4 py-2 ">
-                  {insuredPerson.insuredPersonOccupation}
-                </td>
+                <td className="px-4 py-2 ">{insuredPerson.occupation}</td>
               </tr>
               <tr className="border-b border-gray-300">
                 <td className="px-4 py-2 font-bold w-[350px]">
                   <p>Marital Status</p> <p>(အိမ်ထောင်ရှိ/မရှိ)</p>
                 </td>
-                <td className="px-4 py-2 ">
-                  {insuredPerson.insuredPersonMaritalStatus}
-                </td>
+                <td className="px-4 py-2 ">{insuredPerson.maritalStatus}</td>
               </tr>
               <tr className="border-b border-gray-300">
                 <td className="px-4 py-2 font-bold w-[350px]">
                   <p>Insured's Email Address</p> <p>(အီးမေးလ်လိပ်စာ)</p>
                 </td>
                 <td className="px-4 py-2">
-                  {insuredPerson.insuredPersonEmailAddress}
+                  {insuredPerson.insuredPersonEmail}
                 </td>
               </tr>
               <tr className="border-b border-gray-300">
@@ -438,9 +409,7 @@ const ConfirmationPage = () => {
                   <p>Address Abroad</p>{" "}
                   <p>(ဆိုက်ရောက်မည့်နိုင်ငံနေရပ်လိပ်စာ)</p>
                 </td>
-                <td className="px-4 py-2 ">
-                  {insuredPerson.insuredPersonAddressAbroad}
-                </td>
+                <td className="px-4 py-2 ">{insuredPerson.addressAbroad}</td>
               </tr>
               <tr className="border-b border-gray-300">
                 <td className="px-4 py-2 font-bold w-[350px]">
@@ -452,9 +421,7 @@ const ConfirmationPage = () => {
                 <td className="px-4 py-2 font-bold w-[350px]">
                   <p>Address in Myanmar</p> <p>(မြန်မာနိုင်ငံရှိနေရပ်လိပ်စာ)</p>
                 </td>
-                <td className="px-4 py-2 ">
-                  {insuredPerson.insuredPersonAddressinMyanmar}
-                </td>
+                <td className="px-4 py-2 ">{insuredPerson.addressInMyanmar}</td>
               </tr>
             </tbody>
           </table>
@@ -486,7 +453,7 @@ const ConfirmationPage = () => {
                   <p>Relationship</p> <p>တော်စပ်ပုံ</p>
                 </td>
                 <td className="p-2 text-uppercase">
-                  {insuredPerson.beneficiaryInfomationRelationship}
+                  {insuredPerson.beneficiaryRelationship}
                 </td>
               </tr>
               <tr className="border-b">
@@ -495,7 +462,7 @@ const ConfirmationPage = () => {
                   <p>နိုင်ငံသားစိစစ်ရေးကတ်ပြားအမှတ်</p>
                 </td>
                 <td className="p-2 text-uppercase">
-                  {insuredPerson.beneficiaryInfomationNRC}
+                  {insuredPerson.beneficiaryNRC}
                 </td>
               </tr>
               <tr className="border-b">
@@ -503,8 +470,8 @@ const ConfirmationPage = () => {
                   <p>Contact Phone Number</p> <p>ဆက်သွယ်ရမည့်ဖုန်းနံပါတ်</p>
                 </td>
                 <td className="p-2">
-                  ({insuredPerson.beneficiaryPhoneCode}){" "}
-                  {insuredPerson.beneficiaryPhoneNo}
+                  ({insuredPerson.beneficiaryContactPhoneCode}){" "}
+                  {insuredPerson.beneficiaryContactPhoneNo}
                 </td>
               </tr>
               <tr className="border-b">
@@ -512,9 +479,7 @@ const ConfirmationPage = () => {
                   <p>Email</p>
                   <p>အီးမေးလ်လိပ်စာ</p>
                 </td>
-                <td className="p-2">
-                  {insuredPerson.beneficiaryInfomationEmail}
-                </td>
+                <td className="p-2">{insuredPerson.beneficiaryEmail}</td>
               </tr>
               <tr className="border-b">
                 <td className="p-2 font-bold w-[350px]">
@@ -522,7 +487,7 @@ const ConfirmationPage = () => {
                   <p>နေရပ်လိပ်စာ</p>
                 </td>
                 <td className="p-2 text-uppercase">
-                  {insuredPerson.beneficiaryInfomationAddress}
+                  {insuredPerson.beneficiaryAddress}
                 </td>
               </tr>
             </tbody>

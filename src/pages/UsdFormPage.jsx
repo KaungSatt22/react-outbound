@@ -22,6 +22,7 @@ import {
 import { formatCurrency } from "../ultils/formatCurrency";
 import { useFormik } from "formik";
 import { validationSchema } from "../ultils/Validation";
+import ScrollTop from "../components/ScrollTop";
 
 const UsdFormPage = () => {
   const [isModalAgentOpen, setIsModalAgentOpen] = useState(false);
@@ -33,81 +34,65 @@ const UsdFormPage = () => {
   const [associationInputBox, setAssociationInputBox] = useState(false);
   const [association, setAssociation] = useState();
   const [premiumRate, setPremiumRate] = useState();
-
   const { insuredPerson } = useSelector(insuredPersonState);
   const formik = useFormik({
     initialValues: {
-      insuredPersonPassportNumber:
-        insuredPerson?.insuredPersonPassportNumber || "",
-      insuredPersonPassportissuedCountry:
-        insuredPerson?.insuredPersonPassportissuedCountry || "",
-      insuredPersonPassportissuedDate:
-        insuredPerson?.insuredPersonPassportissuedDate || "",
-      insuredPersonName: insuredPerson?.insuredPersonName || "",
-      insuredPersonDateOfBirth: insuredPerson?.insuredPersonDateOfBirth || "",
-      insuredPersonGender: insuredPerson?.insuredPersonGender || "",
-      insuredPersonforChild: insuredPerson?.insuredPersonforChild
-        ? "child"
-        : "self" || "self",
-      insuredContactPhoneCode: insuredPerson?.insuredContactPhoneCode || "+93",
-      insuredPersonJourneyFrom:
-        insuredPerson?.insuredPersonJourneyFrom || "Myanmar",
+      passportNumber: insuredPerson?.passportNumber || "",
+      passportIssuedCountry: insuredPerson?.passportIssuedCountry || "",
+      passportIssuedDate: insuredPerson?.passportIssuedDate || "",
       insuredPersonContactPhoneNo:
         insuredPerson?.insuredPersonContactPhoneNo || "",
-      insuredPersonForeignContactNo:
-        insuredPerson?.insuredPersonForeignContactNo || "",
-      insuredPersonFatherName: insuredPerson?.insuredPersonFatherName || "",
-      insuredPersonRace: insuredPerson?.insuredPersonRace || "",
-      insuredPersonOccupation: insuredPerson?.insuredPersonOccupation || "",
-      insuredPersonMaritalStatus:
-        insuredPerson?.insuredPersonMaritalStatus || "single",
-      insuredPersonEmailAddress: insuredPerson?.insuredPersonEmailAddress || "",
-      insuredPersonAddressinMyanmar:
-        insuredPerson?.insuredPersonAddressinMyanmar || "",
+      insuredPersonContactPhoneCode:
+        insuredPerson?.insuredPersonContactPhoneCode || "+93",
+      insuredPersonName: insuredPerson?.insuredPersonName || "",
+      insuredPersonDOB: insuredPerson?.insuredPersonDOB || "",
+      insuredPersonGender: insuredPerson?.insuredPersonGender || "",
+      forChild: insuredPerson?.forChild ? "child" : "self",
+      journeyFrom: insuredPerson?.journeyFrom || "Myanmar",
+      foreignContactPhoneNo: insuredPerson?.foreignContactPhoneNo || "",
       foreignContactPhoneCode: insuredPerson?.foreignContactPhoneCode || "+93",
-      insuredPersonAddressAbroad:
-        insuredPerson?.insuredPersonAddressAbroad || "",
+      fatherName: insuredPerson?.fatherName || "",
+      race: insuredPerson?.race || "",
+      occupation: insuredPerson?.occupation || "",
+      maritalStatus: insuredPerson?.maritalStatus || "single",
+      insuredPersonEmail: insuredPerson?.insuredPersonEmail || "",
+      addressInMyanmar: insuredPerson?.addressInMyanmar || "",
+      addressAbroad: insuredPerson?.addressAbroad || "",
       insuredPersonNRC: insuredPerson?.insuredPersonNRC || "",
-      journeyToId: insuredPerson?.journeyToId || "",
-      destinationCountryId: insuredPerson?.destinationCountryId || "",
+      journeyTo: insuredPerson?.journeyTo || "",
+      countryForDestination: insuredPerson?.countryForDestination || "",
       beneficiaryName: insuredPerson?.beneficiaryName || "",
       beneficiaryDOB: insuredPerson?.beneficiaryDOB || "",
-      beneficiaryPhoneNo: insuredPerson?.beneficiaryPhoneNo || "",
-      beneficiaryPhoneCode: insuredPerson?.beneficiaryPhoneCode || "+93",
-      beneficiaryInfomationRelationship:
-        insuredPerson?.beneficiaryInfomationRelationship || "",
-      beneficiaryInfomationNRC: insuredPerson?.beneficiaryInfomationNRC || "",
-      beneficiaryInfomationEmail:
-        insuredPerson?.beneficiaryInfomationEmail || "",
-      beneficiaryInfomationAddress:
-        insuredPerson?.beneficiaryInfomationAddress || "",
+      beneficiaryContactPhoneNo: insuredPerson?.beneficiaryContactPhoneNo || "",
+      beneficiaryContactPhoneCode:
+        insuredPerson?.beneficiaryContactPhoneCode || "+93",
+      beneficiaryRelationship: insuredPerson?.beneficiaryRelationship || "",
+      beneficiaryNRC: insuredPerson?.beneficiaryNRC || "",
+      beneficiaryEmail: insuredPerson?.beneficiaryEmail || "",
+      beneficiaryAddress: insuredPerson?.beneficiaryAddress || "",
       childName: insuredPerson?.childName || "",
       childDOB: insuredPerson?.childDOB || "",
       childGender: insuredPerson?.childGender || "",
-      childInformationGuardianceName:
-        insuredPerson?.childInformationGuardianceName || "",
+      guardianceName: insuredPerson?.guardianceName || "",
       childRelationship: insuredPerson?.childRelationship || "",
-      proposalCoveragePlan: insuredPerson?.proposalCoveragePlan || "",
-      proposalRates: insuredPerson?.proposalRates || "",
-      proposalEstimatedDepartureDate:
-        insuredPerson?.proposalEstimatedDepartureDate || "",
-      proposalPolicyStartDate: insuredPerson?.proposalPolicyStartDate || "",
-      proposalAge: insuredPerson?.proposalAge || "",
-      proposalPackages: insuredPerson?.proposalPackages || "",
+      coveragePlan: insuredPerson?.coveragePlan || "",
+      rates: insuredPerson?.rates || "",
+      estimatedDepartureDate: insuredPerson?.estimatedDepartureDate || "",
+      policyStartDate: insuredPerson?.policyStartDate || "",
+      insuredPersonAge: insuredPerson?.insuredPersonAge || "",
+      packages: insuredPerson?.packages || "",
       paymentMethod: insuredPerson?.paymentMethod || "visa",
       agentId: insuredPerson?.agentId || "",
       buy: insuredPerson?.buy || "usd",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      formik.setFieldValue(
-        "insuredPersonforChild",
-        formik.values.insuredPersonforChild === "child"
-      );
+      formik.setFieldValue("forChild", formik.values.forChild === "child");
       setIsModalConfirmOpen(true);
       getPremiumRate();
     },
   });
+
   const navigate = useNavigate();
   const agentNameRef = useRef();
   const agentLicenseNumRef = useRef();
@@ -119,7 +104,8 @@ const UsdFormPage = () => {
       ? new Date().getFullYear() -
         new Date(formik.values.childDOB).getFullYear()
       : new Date().getFullYear() -
-        new Date(formik.values.insuredPersonDateOfBirth).getFullYear();
+        new Date(formik.values.insuredPersonDOB).getFullYear();
+
   const handleRadioChange = (event) => {
     if (event.target.id === "agent") {
       setIsModalAgentOpen(true);
@@ -130,10 +116,19 @@ const UsdFormPage = () => {
     setAssociation("");
     setAgentInputBox(false);
     setAssociationInputBox(false);
-    agentNameRef.current.value = "";
-    agentLicenseNumRef.current.value = "";
-    associationLicenseNumRef.current.value = "";
-    associationPasswordRef.current.value = "";
+    if (agentNameRef?.current?.value) {
+      agentNameRef.current.value = "";
+    }
+    if (agentLicenseNumRef?.current?.value) {
+      agentLicenseNumRef.current.value = "";
+    }
+    if (associationLicenseNumRef?.current?.value) {
+      associationLicenseNumRef.current.value = "";
+    }
+    if (associationPasswordRef?.current?.value) {
+      associationPasswordRef.current.value = "";
+    }
+    formik.setFieldValue("agentId", "");
   };
 
   const handlePayment = (event) => {
@@ -141,22 +136,20 @@ const UsdFormPage = () => {
       event.currentTarget.getAttribute("data-value");
     formik.setFieldValue("paymentMethod", selectedPaymentMethod);
   };
-
   const getPremiumRate = async () => {
     try {
       const form = new FormData();
       form.append("age", age);
-      form.append("packages", formik.values.proposalPackages);
-      form.append("days", formik.values.proposalCoveragePlan);
+      form.append("packages", formik.values.packages);
+      form.append("days", formik.values.coveragePlan);
       let res = await getPermiumRateByAgeandPackageAndDay(form);
       setPremiumRate(res.data);
-      formik.setFieldValue("proposalAge", age);
-      formik.setFieldValue("proposalRates", res.data.rates);
+      formik.setFieldValue("insuredPersonAge", age);
+      formik.setFieldValue("rates", res.data.rates);
     } catch (error) {
       console.log(error);
     }
   };
-
   const closeAgentModal = () => {
     if (agent === "error") {
       setAgent("");
@@ -176,6 +169,7 @@ const UsdFormPage = () => {
   };
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     getCountries();
   }, []);
 
@@ -223,14 +217,13 @@ const UsdFormPage = () => {
       console.log(err);
     }
   };
-
   const goto = () => {
     navigate("/confirm");
     dispatch(addInsuredPerson(formik.values));
   };
-
   return (
     <div className="bg-[#f0f4f9] py-10">
+      <ScrollTop />
       <form
         className="max-w-[1200px] mx-auto pb-10"
         onSubmit={formik.handleSubmit}
@@ -257,16 +250,16 @@ const UsdFormPage = () => {
                     type="text"
                     placeholder="ENTER YOUR PASSPORT NO."
                     className="p-2 w-full border rounded mt-2 uppercase"
-                    name="insuredPersonPassportNumber"
+                    name="passportNumber"
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    value={formik.values.insuredPersonPassportNumber}
+                    value={formik.values.passportNumber}
                   />
                 </div>
-                {formik.touched.insuredPersonPassportNumber &&
-                formik.errors.insuredPersonPassportNumber ? (
+                {formik.touched.passportNumber &&
+                formik.errors.passportNumber ? (
                   <div className="text-red-500 font-semibold">
-                    {formik.errors.insuredPersonPassportNumber}
+                    {formik.errors.passportNumber}
                   </div>
                 ) : null}
               </div>
@@ -282,16 +275,21 @@ const UsdFormPage = () => {
                   <input
                     type="date"
                     className="p-2 w-full border rounded mt-2 bg-[#e9ecef]"
-                    name="insuredPersonPassportissuedDate"
+                    name="passportIssuedDate"
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    value={formik.values.insuredPersonPassportissuedDate}
+                    value={formik.values.passportIssuedDate}
+                    max={
+                      new Date(new Date().setDate(new Date().getDate() - 1))
+                        .toISOString()
+                        .split("T")[0]
+                    }
                   />
                 </div>
-                {formik.touched.insuredPersonPassportissuedDate &&
-                formik.errors.insuredPersonPassportissuedDate ? (
+                {formik.touched.passportIssuedDate &&
+                formik.errors.passportIssuedDate ? (
                   <div className="text-red-500 font-semibold">
-                    {formik.errors.insuredPersonPassportissuedDate}
+                    {formik.errors.passportIssuedDate}
                   </div>
                 ) : null}
               </div>
@@ -306,10 +304,10 @@ const UsdFormPage = () => {
                 <div>
                   <select
                     className="w-full p-2 mt-2 border rounded uppercase"
-                    name="insuredPersonPassportissuedCountry"
+                    name="passportIssuedCountry"
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    value={formik.values.insuredPersonPassportissuedCountry}
+                    value={formik.values.passportIssuedCountry}
                   >
                     <option>SELECT ONE</option>
                     {countries.map((country) => (
@@ -319,15 +317,15 @@ const UsdFormPage = () => {
                     ))}
                   </select>
                 </div>
-                {formik.touched.insuredPersonPassportissuedCountry &&
-                formik.errors.insuredPersonPassportissuedCountry ? (
+                {formik.touched.passportIssuedCountry &&
+                formik.errors.passportIssuedCountry ? (
                   <div className="text-red-500 font-semibold">
-                    {formik.errors.insuredPersonPassportissuedCountry}
+                    {formik.errors.passportIssuedCountry}
                   </div>
                 ) : null}
               </div>
-              {(formik.values.insuredPersonPassportissuedCountry == 1 ||
-                formik.values.insuredPersonPassportissuedCountry == 124) && (
+              {(formik.values.passportIssuedCountry == 1 ||
+                formik.values.passportIssuedCountry == 124) && (
                 <div>
                   <label className="font-bold">
                     <p>National Identification Number</p>
@@ -349,7 +347,7 @@ const UsdFormPage = () => {
                   </div>
                   {formik.touched.insuredPersonNRC &&
                   formik.errors.insuredPersonNRC ? (
-                    <div className="text-red-500">
+                    <div className="text-red-500 font-semibold">
                       {formik.errors.insuredPersonNRC}
                     </div>
                   ) : null}
@@ -365,23 +363,24 @@ const UsdFormPage = () => {
             <div className="space-x-2 flex items-center">
               <input
                 type="radio"
-                name="insuredPersonforChild"
+                name="forChild"
                 id="urself"
                 value={"self"}
-                defaultChecked
+                checked={formik.values.forChild === "self"}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
-              <label htmlFor="urself">
+              <label htmlFor="urself" className="font-bold">
                 <p>Buy for yourself (This passport holder)</p>
               </label>
             </div>
             <div className="space-x-2 flex my-5">
               <input
                 type="radio"
-                name="insuredPersonforChild"
+                name="forChild"
                 id="child"
                 value="child"
+                checked={formik.values.forChild === "child"}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
@@ -433,19 +432,25 @@ const UsdFormPage = () => {
                   <input
                     type="date"
                     className="p-2 w-full border rounded mt-2 bg-[#e9ecef]"
-                    name="insuredPersonDateOfBirth"
+                    name="insuredPersonDOB"
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    value={formik.values.insuredPersonDateOfBirth}
+                    value={formik.values.insuredPersonDOB}
+                    max={
+                      new Date(new Date().setDate(new Date().getDate() - 1))
+                        .toISOString()
+                        .split("T")[0]
+                    }
                   />
                 </div>
-                {formik.touched.insuredPersonDateOfBirth &&
-                formik.errors.insuredPersonDateOfBirth ? (
-                  <div className="text-red-500 font-semibold">
-                    {formik.errors.insuredPersonDateOfBirth}
+                {formik.touched.insuredPersonDOB &&
+                formik.errors.insuredPersonDOB ? (
+                  <div className="text-red-500">
+                    {formik.errors.insuredPersonDOB}
                   </div>
                 ) : null}
               </div>
+
               <div>
                 <label className="font-bold">
                   <p>Gender (as per passport)</p>
@@ -486,16 +491,17 @@ const UsdFormPage = () => {
                   <input
                     type="date"
                     className="p-2 w-full border rounded mt-2 bg-[#e9ecef]"
-                    name="proposalEstimatedDepartureDate"
+                    name="estimatedDepartureDate"
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    value={formik.values.proposalEstimatedDepartureDate}
+                    value={formik.values.estimatedDepartureDate}
+                    min={new Date().toISOString().split("T")[0]}
                   />
                 </div>
-                {formik.touched.proposalEstimatedDepartureDate &&
-                formik.errors.proposalEstimatedDepartureDate ? (
+                {formik.touched.estimatedDepartureDate &&
+                formik.errors.estimatedDepartureDate ? (
                   <div className="text-red-500 font-semibold">
-                    {formik.errors.proposalEstimatedDepartureDate}
+                    {formik.errors.estimatedDepartureDate}
                   </div>
                 ) : null}
               </div>
@@ -512,7 +518,7 @@ const UsdFormPage = () => {
                     value="MYANMAR"
                     placeholder="ENTER YOUR PASSPORT NO."
                     className="p-2 w-full border rounded mt-2 bg-[#e9ecef]"
-                    disabled
+                    readOnly
                   />
                 </div>
               </div>
@@ -527,10 +533,10 @@ const UsdFormPage = () => {
                 <div>
                   <select
                     className="w-full p-2 mt-2 border rounded uppercase"
-                    name="journeyToId"
+                    name="journeyTo"
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    value={formik.values.journeyToId}
+                    value={formik.values.journeyTo}
                   >
                     <option value="">Select One</option>
                     {countries.map((country) => (
@@ -540,9 +546,9 @@ const UsdFormPage = () => {
                     ))}
                   </select>
                 </div>
-                {formik.touched.journeyToId && formik.errors.journeyToId ? (
+                {formik.touched.JourneyTo && formik.errors.JourneyTo ? (
                   <div className="text-red-500 font-semibold">
-                    {formik.errors.journeyToId}
+                    {formik.errors.JourneyTo}
                   </div>
                 ) : null}
               </div>
@@ -557,16 +563,17 @@ const UsdFormPage = () => {
                   <input
                     type="date"
                     className="p-2 w-full border rounded mt-2 bg-[#e9ecef]"
-                    name="proposalPolicyStartDate"
+                    name="policyStartDate"
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    value={formik.values.proposalPolicyStartDate}
+                    value={formik.values.policyStartDate}
+                    min={new Date().toISOString().split("T")[0]}
                   />
                 </div>
-                {formik.touched.proposalPolicyStartDate &&
-                formik.errors.proposalPolicyStartDate ? (
+                {formik.touched.policyStartDate &&
+                formik.errors.policyStartDate ? (
                   <div className="text-red-500 font-semibold">
-                    {formik.errors.proposalPolicyStartDate}
+                    {formik.errors.policyStartDate}
                   </div>
                 ) : null}
               </div>
@@ -580,10 +587,10 @@ const UsdFormPage = () => {
                 <div>
                   <select
                     className="w-full p-2 mt-2 border rounded"
-                    name="proposalCoveragePlan"
+                    name="coveragePlan"
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    value={formik.values.proposalCoveragePlan}
+                    value={formik.values.coveragePlan}
                   >
                     <option value="">Select One</option>
                     <option value="5">5 Days</option>
@@ -597,10 +604,9 @@ const UsdFormPage = () => {
                     <option value="180">180 Days</option>
                   </select>
                 </div>
-                {formik.touched.proposalCoveragePlan &&
-                formik.errors.proposalCoveragePlan ? (
+                {formik.touched.coveragePlan && formik.errors.coveragePlan ? (
                   <div className="text-red-500 font-semibold">
-                    {formik.errors.proposalCoveragePlan}
+                    {formik.errors.coveragePlan}
                   </div>
                 ) : null}
               </div>
@@ -614,10 +620,10 @@ const UsdFormPage = () => {
                 <div>
                   <select
                     className="w-full p-2 mt-2 border rounded"
-                    name="proposalPackages"
+                    name="packages"
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    value={formik.values.proposalPackages}
+                    value={formik.values.packages}
                   >
                     <option value="">Select One</option>
                     <option value="10000">USD 10,000</option>
@@ -625,10 +631,9 @@ const UsdFormPage = () => {
                     <option value="50000">USD 50,000</option>
                   </select>
                 </div>
-                {formik.touched.proposalPackages &&
-                formik.errors.proposalPackages ? (
+                {formik.touched.packages && formik.errors.packages ? (
                   <div className="text-red-500 font-semibold">
-                    {formik.errors.proposalPackages}
+                    {formik.errors.packages}
                   </div>
                 ) : null}
               </div>
@@ -646,8 +651,8 @@ const UsdFormPage = () => {
                       className="w-20 p-2 mt-2 border rounded"
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
-                      value={formik.values.insuredContactPhoneCode}
-                      name="insuredContactPhoneCode"
+                      value={formik.values.insuredPersonContactPhoneCode}
+                      name="insuredPersonContactPhoneCode"
                     >
                       {countries.map((country) => (
                         <option value={country.phoneCode} key={country.id}>
@@ -703,10 +708,10 @@ const UsdFormPage = () => {
                       type="text"
                       className="p-2 w-full border rounded mt-2 "
                       placeholder="ENTER PHONE NUMBER"
-                      name="insuredPersonForeignContactNo"
+                      name="foreignContactPhoneNo"
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
-                      value={formik.values.insuredPersonForeignContactNo}
+                      value={formik.values.foreignContactPhoneNo}
                     />
                   </div>
                 </div>
@@ -721,10 +726,10 @@ const UsdFormPage = () => {
                     type="type"
                     className="p-2 w-full border rounded mt-2 uppercase "
                     placeholder="ENTER YOUR FATHER NAME"
-                    name="insuredPersonFatherName"
+                    name="fatherName"
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    value={formik.values.insuredPersonFatherName}
+                    value={formik.values.fatherName}
                   />
                 </div>
               </div>
@@ -738,10 +743,10 @@ const UsdFormPage = () => {
                     type="type"
                     className="p-2 w-full border rounded mt-2 uppercase"
                     placeholder="ENTER YOUR RACE"
-                    name="insuredPersonRace"
+                    name="race"
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    value={formik.values.insuredPersonRace}
+                    value={formik.values.race}
                   />
                 </div>
               </div>
@@ -755,10 +760,10 @@ const UsdFormPage = () => {
                     type="type"
                     className="p-2 w-full border rounded mt-2 uppercase"
                     placeholder="ENTER YOUR Occupation"
-                    name="insuredPersonOccupation"
+                    name="occupation"
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    value={formik.values.insuredPersonOccupation}
+                    value={formik.values.occupation}
                   />
                 </div>
               </div>
@@ -772,7 +777,7 @@ const UsdFormPage = () => {
                     <input
                       type="radio"
                       id="single"
-                      name="insuredPersonMaritalStatus"
+                      name="maritalStatus"
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       value="single"
@@ -784,7 +789,7 @@ const UsdFormPage = () => {
                     <input
                       type="radio"
                       id="married"
-                      name="insuredPersonMaritalStatus"
+                      name="maritalStatus"
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       value="married"
@@ -803,10 +808,10 @@ const UsdFormPage = () => {
                     type="type"
                     className="p-2 w-full border rounded mt-2 "
                     placeholder="ENTER YOUR EMAIL"
-                    name="insuredPersonEmailAddress"
+                    name="insuredPersonEmail"
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    value={formik.values.insuredPersonEmailAddress}
+                    value={formik.values.insuredPersonEmail}
                   />
                 </div>
               </div>
@@ -821,10 +826,10 @@ const UsdFormPage = () => {
                     rows="4"
                     placeholder="..."
                     maxLength="250"
-                    name="insuredPersonAddressinMyanmar"
+                    name="addressInMyanmar"
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    value={formik.values.insuredPersonAddressinMyanmar}
+                    value={formik.values.addressInMyanmar}
                   ></textarea>
                 </div>
               </div>
@@ -842,16 +847,15 @@ const UsdFormPage = () => {
                     rows="4"
                     placeholder="..."
                     maxLength="250"
-                    name="insuredPersonAddressAbroad"
+                    name="addressAbroad"
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    value={formik.values.insuredPersonAddressAbroad}
+                    value={formik.values.addressAbroad}
                   ></textarea>
                 </div>
-                {formik.touched.insuredPersonAddressAbroad &&
-                formik.errors.insuredPersonAddressAbroad ? (
+                {formik.touched.addressAbroad && formik.errors.addressAbroad ? (
                   <div className="text-red-500 font-semibold">
-                    {formik.errors.insuredPersonAddressAbroad}
+                    {formik.errors.addressAbroad}
                   </div>
                 ) : null}
               </div>
@@ -866,10 +870,10 @@ const UsdFormPage = () => {
                 <div>
                   <select
                     className="w-full p-2 mt-2 border rounded uppercase"
-                    name="destinationCountryId"
+                    name="countryForDestination"
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    value={formik.values.destinationCountryId}
+                    value={formik.values.countryForDestination}
                   >
                     <option value="">Select One</option>
                     {countries.map((country) => (
@@ -879,16 +883,16 @@ const UsdFormPage = () => {
                     ))}
                   </select>
                 </div>
-                {formik.touched.destinationCountryId &&
-                formik.errors.destinationCountryId ? (
+                {formik.touched.countryForDestination &&
+                formik.errors.countryForDestination ? (
                   <div className="text-red-500 font-semibold">
-                    {formik.errors.destinationCountryId}
+                    {formik.errors.countryForDestination}
                   </div>
                 ) : null}
               </div>
             </div>
           </div>
-          {formik.values.insuredPersonforChild === "child" && (
+          {formik.values.forChild === "child" && (
             <div className="bg-[#ddd] p-3 my-5">
               <h3 className="underline text-lg font-bold">
                 Child Information (Child is not holding a valid passport)
@@ -934,6 +938,11 @@ const UsdFormPage = () => {
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       value={formik.values.childDOB}
+                      max={
+                        new Date(new Date().setDate(new Date().getDate() - 1))
+                          .toISOString()
+                          .split("T")[0]
+                      }
                     />
                   </div>
                   {formik.touched.childDOB && formik.errors.childDOB ? (
@@ -980,16 +989,16 @@ const UsdFormPage = () => {
                       type="type"
                       className="p-2 w-full border rounded mt-2 uppercase"
                       placeholder="ENTER INSURANCE NAME"
-                      name="childInformationGuardianceName"
+                      name="guardianceName"
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
-                      value={formik.values.childInformationGuardianceName}
+                      value={formik.values.guardianceName}
                     />
                   </div>
-                  {formik.touched.childInformationGuardianceName &&
-                  formik.errors.childInformationGuardianceName ? (
+                  {formik.touched.guardianceName &&
+                  formik.errors.guardianceName ? (
                     <div className="text-red-500 font-semibold">
-                      {formik.errors.childInformationGuardianceName}
+                      {formik.errors.guardianceName}
                     </div>
                   ) : null}
                 </div>
@@ -1068,6 +1077,11 @@ const UsdFormPage = () => {
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     value={formik.values.beneficiaryDOB}
+                    max={
+                      new Date(new Date().setDate(new Date().getDate() - 1))
+                        .toISOString()
+                        .split("T")[0]
+                    }
                   />
                 </div>
                 {formik.touched.beneficiaryDOB &&
@@ -1089,16 +1103,16 @@ const UsdFormPage = () => {
                     type="type"
                     className="p-2 w-full border rounded mt-2 uppercase"
                     placeholder="ENTER RELATIONSHIP"
-                    name="beneficiaryInfomationRelationship"
+                    name="beneficiaryRelationship"
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    value={formik.values.beneficiaryInfomationRelationship}
+                    value={formik.values.beneficiaryRelationship}
                   />
                 </div>
-                {formik.touched.beneficiaryInfomationRelationship &&
-                formik.errors.beneficiaryInfomationRelationship ? (
+                {formik.touched.beneficiaryRelationship &&
+                formik.errors.beneficiaryRelationship ? (
                   <div className="text-red-500 font-semibold">
-                    {formik.errors.beneficiaryInfomationRelationship}
+                    {formik.errors.beneficiaryRelationship}
                   </div>
                 ) : null}
               </div>
@@ -1116,7 +1130,7 @@ const UsdFormPage = () => {
                       className="w-20 p-2 mt-2 border rounded"
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
-                      value={formik.values.beneficiaryPhoneCode}
+                      value={formik.values.beneficiaryContactPhoneCode}
                       name="beneficiaryPhoneCode"
                     >
                       {countries.map((country) => (
@@ -1132,17 +1146,17 @@ const UsdFormPage = () => {
                       type="text"
                       className="p-2 w-full border rounded mt-2 "
                       placeholder="ENTER PHONE NUMBER"
-                      name="beneficiaryPhoneNo"
+                      name="beneficiaryContactPhoneNo"
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
-                      value={formik.values.beneficiaryPhoneNo}
+                      value={formik.values.beneficiaryContactPhoneNo}
                     />
                   </div>
                 </div>
-                {formik.touched.beneficiaryPhoneNo &&
-                formik.errors.beneficiaryPhoneNo ? (
+                {formik.touched.beneficiaryContactPhoneNo &&
+                formik.errors.beneficiaryContactPhoneNo ? (
                   <div className="text-red-500 font-semibold">
-                    {formik.errors.beneficiaryPhoneNo}
+                    {formik.errors.beneficiaryContactPhoneNo}
                   </div>
                 ) : null}
               </div>
@@ -1156,10 +1170,10 @@ const UsdFormPage = () => {
                     type="type"
                     className="p-2 w-full border rounded mt-2 uppercase"
                     placeholder="ENTER NATIONAL IDENTIFICAITON NUMBER"
-                    name="beneficiaryInfomationNRC"
+                    name="beneficiaryNRC"
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    value={formik.values.beneficiaryInfomationNRC}
+                    value={formik.values.beneficiaryNRC}
                   />
                 </div>
               </div>
@@ -1173,10 +1187,10 @@ const UsdFormPage = () => {
                     type="type"
                     className="p-2 w-full border rounded mt-2 "
                     placeholder="ENTER EMAIL"
-                    name="beneficiaryInfomationEmail"
+                    name="beneficiaryEmail"
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    value={formik.values.beneficiaryInfomationEmail}
+                    value={formik.values.beneficiaryEmail}
                   />
                 </div>
               </div>
@@ -1191,10 +1205,10 @@ const UsdFormPage = () => {
                     rows="4"
                     placeholder="..."
                     maxLength="250"
-                    name="beneficiaryInfomationAddress"
+                    name="beneficiaryAddress"
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    value={formik.values.beneficiaryInfomationAddress}
+                    value={formik.values.beneficiaryAddress}
                   ></textarea>
                 </div>
               </div>
@@ -1264,9 +1278,9 @@ const UsdFormPage = () => {
                     <input
                       type="text"
                       placeholder="Agent Name"
-                      ref={agentNameRef}
-                      value={agentNameRef.current?.value}
+                      value={agent.agentName}
                       className="p-2 w-full mt-2 uppercase"
+                      readOnly
                     />
                   </div>
                 </div>
@@ -1278,9 +1292,9 @@ const UsdFormPage = () => {
                     <input
                       type="text"
                       placeholder="Agent License Number"
-                      ref={agentLicenseNumRef}
-                      value={agentLicenseNumRef.current?.value}
+                      value={agent.agentLicenseNumber}
                       className="p-2 w-full mt-2 uppercase"
+                      readOnly
                     />
                   </div>
                 </div>
@@ -1303,9 +1317,8 @@ const UsdFormPage = () => {
                   <div>
                     <input
                       type="text"
-                      placeholder="Agent License Number"
-                      ref={associationLicenseNumRef}
-                      value={associationLicenseNumRef.current?.value}
+                      placeholder="Agent Name"
+                      value={association.agentName}
                       className="p-2 w-full mt-2 uppercase"
                     />
                   </div>
@@ -1317,9 +1330,8 @@ const UsdFormPage = () => {
                   <div>
                     <input
                       type="text"
-                      placeholder="Password"
-                      ref={associationPasswordRef}
-                      value={associationPasswordRef.current?.value}
+                      placeholder="Agent License Number"
+                      value={association.agentLicenseNumber}
                       className="p-2 w-full mt-2 uppercase"
                     />
                   </div>
@@ -1335,7 +1347,7 @@ const UsdFormPage = () => {
               </div>
             )}
           </div>
-          <button className="bg-[#074DA1] py-2 px-7 mt-5 text-white hover:bg-white rounded hover:text-[#074DA1] hover:border hover:border-[#074DA1] transition-all duration-500">
+          <button className="bg-[#074DA1] border py-2 px-7 mt-5 text-white hover:bg-white rounded hover:text-[#074DA1] hover:border hover:border-[#074DA1] transition-all duration-500">
             Submit And Continue
           </button>
         </div>
@@ -1379,7 +1391,7 @@ const UsdFormPage = () => {
             </div>
           </div>
           {agent === "error" && (
-            <p className="text-red-600 mt-5">
+            <p className="text-red-600 mt-5 font-semibold">
               Please check again your "Agent Name" and "Agent License".
             </p>
           )}
@@ -1430,7 +1442,7 @@ const UsdFormPage = () => {
             </div>
           </div>
           {association === "error" && (
-            <p className="text-red-600 mt-5">
+            <p className="text-red-600 mt-5 font-semibold">
               Please check again your "Agent License Number" and "Password".
             </p>
           )}
@@ -1461,7 +1473,7 @@ const UsdFormPage = () => {
               <tr className="align-top border-b border-white">
                 <td className="px-4 py-2 text-gray-700">Insured For</td>
                 <td className="px-4 py-2 font-bold border-white">
-                  {formik.values.insuredPersonforChild === "child"
+                  {formik.values.forChild === "child"
                     ? "Buy for child"
                     : "Buy for this passport holder"}
                 </td>
@@ -1485,19 +1497,19 @@ const UsdFormPage = () => {
               <tr className="border-b border-white">
                 <td className=" px-4 py-2 text-gray-700">Coverage Plan</td>
                 <td className=" px-4 py-2 font-bold">
-                  {formik.values.proposalCoveragePlan} Days
+                  {formik.values.coveragePlan} Days
                 </td>
               </tr>
               <tr className="border-b border-white">
                 <td className=" px-4 py-2 text-gray-700">Packages</td>
                 <td className=" px-4 py-2 font-bold">
-                  {formatCurrency(formik.values.proposalPackages)} USD
+                  {formatCurrency(formik.values.packages)} USD
                 </td>
               </tr>
               <tr className="border-b border-white">
                 <td className=" px-4 py-2 text-gray-700">Passport Number</td>
                 <td className=" px-4 py-2 font-bold">
-                  {formik.values.insuredPersonPassportNumber}
+                  {formik.values.passportNumber}
                 </td>
               </tr>
               <tr className="align-top border-b border-white">
@@ -1514,7 +1526,7 @@ const UsdFormPage = () => {
                   Estimated Departure Date
                 </td>
                 <td className=" px-4 py-2 font-bold">
-                  {formik.values.proposalEstimatedDepartureDate}
+                  {formik.values.estimatedDepartureDate}
                 </td>
               </tr>
             </tbody>
