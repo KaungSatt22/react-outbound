@@ -10,7 +10,6 @@ import { formatDate } from "../ultils/dateFormat";
 const EmquiryPage = () => {
   const [countries, setCountries] = useState([]);
   const [purchaseHistory, setPurchaseHistory] = useState([]);
-  console.log(purchaseHistory);
 
   const validationSchema = yup.object({
     passportNumber: yup.string().required("This Field is required"),
@@ -28,7 +27,11 @@ const EmquiryPage = () => {
       form.append("passportIssuedCountry", +values.passportIssuedCountry);
       try {
         const res = await getEnquiry(form);
-        setPurchaseHistory(res.data);
+        if (res.data.length === 0) {
+          setPurchaseHistory(null);
+        } else {
+          setPurchaseHistory(res.data);
+        }
       } catch (error) {
         console.log(error.message);
       }
@@ -113,7 +116,10 @@ const EmquiryPage = () => {
               Search
             </button>
           </form>
-          {purchaseHistory.length > 0 && (
+          {purchaseHistory === null && (
+            <p className="font-bold text-red-500 my-5">NO Record Found</p>
+          )}
+          {purchaseHistory?.length > 0 && (
             <>
               <h2 className="font-bold text-[#074DA1] my-5">
                 Inbound Travel Accident Insurance Purchase History

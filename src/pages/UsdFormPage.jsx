@@ -218,7 +218,6 @@ const UsdFormPage = () => {
     navigate("/confirm");
     dispatch(addInsuredPerson(formik.values));
   };
-  console.log(formik.values.forChild);
   return (
     <div className="bg-[#f0f4f9] py-10">
       <ScrollTop />
@@ -1298,6 +1297,7 @@ const UsdFormPage = () => {
                 </div>
                 <div className="flex-1 mt-10">
                   <button
+                    type="button"
                     className="underline font-bold "
                     onClick={() => setIsModalAgentOpen(true)}
                   >
@@ -1336,6 +1336,7 @@ const UsdFormPage = () => {
                 </div>
                 <div className="flex-1 mt-10">
                   <button
+                    type="button"
                     className="underline font-bold "
                     onClick={() => setIsModalAssociationOpen(true)}
                   >

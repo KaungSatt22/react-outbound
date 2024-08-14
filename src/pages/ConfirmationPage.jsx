@@ -87,7 +87,6 @@ const ConfirmationPage = () => {
   useEffect(() => {
     getCountries();
   }, []);
-  console.log("isChild :" + insuredPerson.forChild);
   const getCountries = async () => {
     try {
       let res = await getAllCountry();

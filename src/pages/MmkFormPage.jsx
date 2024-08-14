@@ -1301,6 +1301,7 @@ const UsdFormPage = () => {
                 <div className="flex-1 mt-10">
                   <button
                     className="underline font-bold "
+                    type="button"
                     onClick={() => setIsModalAgentOpen(true)}
                   >
                     Edit
@@ -1339,6 +1340,7 @@ const UsdFormPage = () => {
                 <div className="flex-1 mt-10">
                   <button
                     className="underline font-bold "
+                    type="button"
                     onClick={() => setIsModalAssociationOpen(true)}
                   >
                     Edit
