@@ -156,9 +156,7 @@ const EmquiryPage = () => {
                       <td className="border  py-2">{index + 1}.</td>
                       <td className="border  py-2">{item.certificateNumber}</td>
                       <td className="border  py-2">
-                        {item.forChild
-                          ? item.childInformation.childName
-                          : item.name}
+                        {item.forChild ? item.childName : item.name}
                       </td>
                       <td className="border  py-2">{item.age}</td>
                       <td className="border  py-2">{item.contactPhone}</td>

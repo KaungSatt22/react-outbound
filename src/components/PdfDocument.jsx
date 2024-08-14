@@ -169,7 +169,7 @@ const MyDocument = ({ item }) => {
               <View style={styles.detailRow}>
                 <Text style={styles.label}>Agent/Agent name</Text>
                 <Text style={styles.value}>
-                  : {item.agent ? item.agent.agentName : "[N/A]"}
+                  : {item.agentName ? item.agentName : "[N/A]"}
                 </Text>
               </View>
               <View style={styles.detailRow}>
@@ -264,13 +264,13 @@ const MyDocument = ({ item }) => {
             <View style={styles.tableRow}>
               <View style={styles.tableCol}>
                 <Text style={styles.tableCell}>
-                  {item.forChild ? item.childInformation.childName : item.name}
+                  {item.forChild ? item.childName : item.name}
                 </Text>
               </View>
               <View style={styles.tableCol}>
                 <Text style={styles.tableCell}>
                   {item.forChild
-                    ? formatDate(item.childInformation.dateOfBirth)
+                    ? formatDate(item.childDOB)
                     : formatDate(item.dob)}
                 </Text>
               </View>

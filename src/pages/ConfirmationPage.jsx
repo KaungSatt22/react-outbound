@@ -8,7 +8,6 @@ import { getAllCountry } from "../api/country";
 import { postInsuranced } from "../api/insuranced";
 import { useNavigate } from "react-router-dom";
 import { formatCurrency } from "../ultils/formatCurrency";
-import { generateCertificate } from "../ultils/dateFormat";
 import { IoReturnUpBack } from "react-icons/io5";
 import ScrollTop from "../components/ScrollTop";
 
@@ -68,7 +67,6 @@ const ConfirmationPage = () => {
     if (insuredPerson.agentId) {
       form.append("agentId", insuredPerson.agentId);
     }
-    // form.append("certificateNumber", generateCertificate());
     form.append("coveragePlan", insuredPerson.coveragePlan);
     form.append("rates", insuredPerson.rates);
     form.append("estimatedDepartureDate", insuredPerson.estimatedDepartureDate);
