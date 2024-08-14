@@ -50,7 +50,7 @@ const UsdFormPage = () => {
       insuredPersonName: insuredPerson?.insuredPersonName || "",
       insuredPersonDOB: insuredPerson?.insuredPersonDOB || "",
       insuredPersonGender: insuredPerson?.insuredPersonGender || "",
-      forChild: insuredPerson?.forChild ? "child" : "self",
+      forChild: insuredPerson?.forChild === "child" ? "child" : "self",
       journeyFrom: insuredPerson?.journeyFrom || "Myanmar",
       foreignContactPhoneNo: insuredPerson?.foreignContactPhoneNo || "",
       foreignContactPhoneCode: insuredPerson?.foreignContactPhoneCode || "+93",
@@ -89,8 +89,7 @@ const UsdFormPage = () => {
       buy: insuredPerson?.buy || "mmk",
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => {
-      formik.setFieldValue("forChild", formik.values.forChild === "child");
+    onSubmit: () => {
       setIsModalConfirmOpen(true);
       getPremiumRate();
     },
@@ -103,7 +102,7 @@ const UsdFormPage = () => {
   const associationPasswordRef = useRef();
   const dispatch = useDispatch();
   const age =
-    formik.values.childDOB !== ""
+    formik.values.childDOB !== "" && formik.values.forChild === "child"
       ? new Date().getFullYear() -
         new Date(formik.values.childDOB).getFullYear()
       : new Date().getFullYear() -
@@ -1474,7 +1473,7 @@ const UsdFormPage = () => {
               <tr className="align-top border-b border-white">
                 <td className="px-4 py-2 text-gray-700">Insured For</td>
                 <td className="px-4 py-2 font-bold border-white">
-                  {formik.values.forChild
+                  {formik.values.forChild === "child"
                     ? "Buy for child"
                     : "Buy for this passport holder"}
                 </td>

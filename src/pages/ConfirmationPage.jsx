@@ -43,7 +43,7 @@ const ConfirmationPage = () => {
     form.append("passportNumber", insuredPerson.passportNumber);
     form.append("passportIssuedDate", insuredPerson.passportIssuedDate);
     form.append("insuredPersonNRC", insuredPerson.insuredPersonNRC);
-    form.append("forChild", insuredPerson.forChild);
+    form.append("forChild", insuredPerson.forChild === "child");
     form.append("journeyTo", insuredPerson.journeyTo);
     form.append("countryForDestination", insuredPerson.countryForDestination);
     form.append("beneficiaryName", insuredPerson.beneficiaryName);
@@ -87,7 +87,7 @@ const ConfirmationPage = () => {
   useEffect(() => {
     getCountries();
   }, []);
-
+  console.log("isChild :" + insuredPerson.forChild);
   const getCountries = async () => {
     try {
       let res = await getAllCountry();
@@ -225,7 +225,7 @@ const ConfirmationPage = () => {
               <tr className="border-b border-gray-300 w-[350px]">
                 <td className="px-4 py-2 font-bold">Insured For</td>
                 <td className="px-4 py-2 uppercase">
-                  {insuredPerson.forChild
+                  {insuredPerson.forChild === "child"
                     ? "BUY FOR CHILD"
                     : "BUY FOR THIS PASSPORT HOLDER"}
                 </td>
@@ -277,7 +277,7 @@ const ConfirmationPage = () => {
                   {insuredPerson.estimatedDepartureDate}
                 </td>
               </tr>
-              {insuredPerson.forChild && (
+              {insuredPerson.forChild === "child" && (
                 <>
                   <tr className="border-b border-gray-300">
                     <td className="px-4 py-2 font-bold w-[350px]">

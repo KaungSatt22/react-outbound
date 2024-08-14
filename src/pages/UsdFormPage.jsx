@@ -47,7 +47,7 @@ const UsdFormPage = () => {
       insuredPersonName: insuredPerson?.insuredPersonName || "",
       insuredPersonDOB: insuredPerson?.insuredPersonDOB || "",
       insuredPersonGender: insuredPerson?.insuredPersonGender || "",
-      forChild: insuredPerson?.forChild ? "child" : "self",
+      forChild: insuredPerson?.forChild === "child" ? "child" : "self",
       journeyFrom: insuredPerson?.journeyFrom || "Myanmar",
       foreignContactPhoneNo: insuredPerson?.foreignContactPhoneNo || "",
       foreignContactPhoneCode: insuredPerson?.foreignContactPhoneCode || "+93",
@@ -86,13 +86,11 @@ const UsdFormPage = () => {
       buy: insuredPerson?.buy || "usd",
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => {
-      formik.setFieldValue("forChild", formik.values.forChild === "child");
+    onSubmit: () => {
       setIsModalConfirmOpen(true);
       getPremiumRate();
     },
   });
-
   const navigate = useNavigate();
   const agentNameRef = useRef();
   const agentLicenseNumRef = useRef();
@@ -100,7 +98,7 @@ const UsdFormPage = () => {
   const associationPasswordRef = useRef();
   const dispatch = useDispatch();
   const age =
-    formik.values.childDOB !== ""
+    formik.values.childDOB !== "" && formik.values.forChild === "child"
       ? new Date().getFullYear() -
         new Date(formik.values.childDOB).getFullYear()
       : new Date().getFullYear() -
@@ -220,6 +218,7 @@ const UsdFormPage = () => {
     navigate("/confirm");
     dispatch(addInsuredPerson(formik.values));
   };
+  console.log(formik.values.forChild);
   return (
     <div className="bg-[#f0f4f9] py-10">
       <ScrollTop />
