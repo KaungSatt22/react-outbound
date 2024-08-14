@@ -26,6 +26,7 @@ import { formatCurrency } from "../ultils/formatCurrency";
 import { useFormik } from "formik";
 import { validationSchema } from "../ultils/Validation";
 import ScrollTop from "../components/ScrollTop";
+import { calculateage } from "../ultils/calculateage";
 
 const UsdFormPage = () => {
   const [isModalAgentOpen, setIsModalAgentOpen] = useState(false);
@@ -102,10 +103,8 @@ const UsdFormPage = () => {
   const dispatch = useDispatch();
   const age =
     formik.values.childDOB !== "" && formik.values.forChild === "child"
-      ? new Date().getFullYear() -
-        new Date(formik.values.childDOB).getFullYear()
-      : new Date().getFullYear() -
-        new Date(formik.values.insuredPersonDOB).getFullYear();
+      ? calculateage(formik.values.childDOB)
+      : calculateage(formik.values.insuredPersonDOB);
   const handleRadioChange = (event) => {
     if (event.target.id === "agent") {
       setIsModalAgentOpen(true);
