@@ -6,7 +6,7 @@ import EmquiryPage from "./pages/EmquiryPage";
 import Outbound from "./pages/Outbound";
 import UsdFormPage from "./pages/UsdFormPage";
 import MmkFormPage from "./pages/MmkFormPage";
-
+import TestPage from "./pages/TestPage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -15,6 +15,10 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Outbound />,
+      },
+      {
+        path: "/test",
+        element: <TestPage />,
       },
       {
         path: "/usd",

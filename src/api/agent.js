@@ -14,6 +14,6 @@ export const getAssociationByLicenseNumandPassword = async (payload) => {
     let res = await api.post("/api/association", payload);
     return res;
   } catch (err) {
-    return err.message;
+    return err.response;
   }
 };

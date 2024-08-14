@@ -29,10 +29,6 @@ const UsdFormPage = () => {
   const [isModalAssociationOpen, setIsModalAssociationOpen] = useState(false);
   const [isModalConfirmOpen, setIsModalConfirmOpen] = useState(false);
   const [countries, setCountries] = useState([]);
-  const [agent, setAgent] = useState({});
-  const [agentInputBox, setAgentInputBox] = useState(false);
-  const [associationInputBox, setAssociationInputBox] = useState(false);
-  const [association, setAssociation] = useState();
   const [premiumRate, setPremiumRate] = useState();
   const { insuredPerson } = useSelector(insuredPersonState);
   const formik = useFormik({
@@ -47,7 +43,7 @@ const UsdFormPage = () => {
       insuredPersonName: insuredPerson?.insuredPersonName || "",
       insuredPersonDOB: insuredPerson?.insuredPersonDOB || "",
       insuredPersonGender: insuredPerson?.insuredPersonGender || "",
-      forChild: insuredPerson?.forChild ? "child" : "self",
+      forChild: insuredPerson?.forChild === "child" ? "child" : "self",
       journeyFrom: insuredPerson?.journeyFrom || "Myanmar",
       foreignContactPhoneNo: insuredPerson?.foreignContactPhoneNo || "",
       foreignContactPhoneCode: insuredPerson?.foreignContactPhoneCode || "+93",
@@ -84,10 +80,12 @@ const UsdFormPage = () => {
       paymentMethod: insuredPerson?.paymentMethod || "visa",
       agentId: insuredPerson?.agentId || "",
       buy: insuredPerson?.buy || "usd",
+      selectedAgent: insuredPerson?.selectedAgent || "self",
+      agentState: insuredPerson?.agentState || "",
+      associationState: insuredPerson?.associationState || "",
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => {
-      formik.setFieldValue("forChild", formik.values.forChild === "child");
+    onSubmit: () => {
       setIsModalConfirmOpen(true);
       getPremiumRate();
     },
@@ -100,7 +98,7 @@ const UsdFormPage = () => {
   const associationPasswordRef = useRef();
   const dispatch = useDispatch();
   const age =
-    formik.values.childDOB !== ""
+    formik.values.childDOB !== "" && formik.values.forChild === "child"
       ? new Date().getFullYear() -
         new Date(formik.values.childDOB).getFullYear()
       : new Date().getFullYear() -
@@ -108,17 +106,28 @@ const UsdFormPage = () => {
   const handleRadioChange = (event) => {
     if (event.target.id === "agent") {
       setIsModalAgentOpen(true);
+      formik.setFieldValue("selectedAgent", "agent");
     } else if (event.target.id === "association") {
+      formik.setFieldValue("selectedAgent", "association");
       setIsModalAssociationOpen(true);
+    } else {
+      formik.setFieldValue("selectedAgent", "self");
     }
-    setAgent("");
-    setAssociation("");
-    setAgentInputBox(false);
-    setAssociationInputBox(false);
-    agentNameRef.current.value = "";
-    agentLicenseNumRef.current.value = "";
-    associationLicenseNumRef.current.value = "";
-    associationPasswordRef.current.value = "";
+    formik.setFieldValue("agentState", "");
+    formik.setFieldValue("associationState", "");
+    if (agentNameRef?.current?.value) {
+      agentNameRef.current.value = "";
+    }
+    if (agentLicenseNumRef?.current?.value) {
+      agentLicenseNumRef.current.value = "";
+    }
+    if (associationLicenseNumRef?.current?.value) {
+      associationLicenseNumRef.current.value = "";
+    }
+    if (associationPasswordRef?.current?.value) {
+      associationPasswordRef.current.value = "";
+    }
+    formik.setFieldValue("agentId", "");
   };
 
   const handlePayment = (event) => {
@@ -126,7 +135,6 @@ const UsdFormPage = () => {
       event.currentTarget.getAttribute("data-value");
     formik.setFieldValue("paymentMethod", selectedPaymentMethod);
   };
-  setPremiumRate;
   const getPremiumRate = async () => {
     try {
       const form = new FormData();
@@ -142,15 +150,15 @@ const UsdFormPage = () => {
     }
   };
   const closeAgentModal = () => {
-    if (agent === "error") {
-      setAgent("");
+    if (formik.values.agentState === "error") {
+      formik.setFieldValue("agentState", "");
     }
     setIsModalAgentOpen(false);
   };
 
   const closeAssociationModal = () => {
-    if (association === "error") {
-      setAssociation("");
+    if (formik.values.associationState === "error") {
+      formik.setFieldValue("associationState", "");
     }
     setIsModalAssociationOpen(false);
   };
@@ -160,7 +168,6 @@ const UsdFormPage = () => {
   };
 
   useEffect(() => {
-    window.scrollTo(0, 0);
     getCountries();
   }, []);
 
@@ -181,39 +188,39 @@ const UsdFormPage = () => {
     form.append("agentLicenseNumber", agentLicenseNumRef.current.value);
     try {
       const res = await getAgentBynameandLicNum(form);
-      setAgent(res.data === "" ? "error" : res.data);
+      formik.setFieldValue("agentState", res.data === "" ? "error" : res.data);
       formik.setFieldValue("agentId", res.data?.id);
       if (res.data) {
         closeAgentModal();
-        setAgentInputBox(true);
       }
     } catch (error) {
-      console.log(err);
+      console.log(error.message);
     }
   };
   const getAssociation = async () => {
     const form = new FormData();
     form.append("agentLicenseNumber", associationLicenseNumRef.current.value);
     form.append("password", associationPasswordRef.current.value);
-
     try {
       const res = await getAssociationByLicenseNumandPassword(form);
-      setAssociation(res.data === "" ? "error" : res.data);
+      formik.setFieldValue(
+        "associationState",
+        res.data === "" ? "error" : res.data
+      );
       formik.setFieldValue("agentId", res.data?.id);
       if (res.data) {
-        console.log("Result" + res);
         closeAssociationModal();
-        setAssociationInputBox(true);
       }
     } catch (error) {
-      console.log(err);
+      console.log(error);
     }
   };
-  console.log(JSON.stringify(association));
+  console.log(formik.values);
   const goto = () => {
     navigate("/confirm");
     dispatch(addInsuredPerson(formik.values));
   };
+
   return (
     <div className="bg-[#f0f4f9] py-10">
       <ScrollTop />
@@ -539,9 +546,9 @@ const UsdFormPage = () => {
                     ))}
                   </select>
                 </div>
-                {formik.touched.JourneyTo && formik.errors.JourneyTo ? (
+                {formik.touched.journeyTo && formik.errors.journeyTo ? (
                   <div className="text-red-500 font-semibold">
-                    {formik.errors.JourneyTo}
+                    {formik.errors.journeyTo}
                   </div>
                 ) : null}
               </div>
@@ -1216,7 +1223,7 @@ const UsdFormPage = () => {
                 <input
                   type="radio"
                   name="agent"
-                  defaultChecked
+                  checked={formik.values.selectedAgent === "self"}
                   id="self"
                   onChange={handleRadioChange}
                 />
@@ -1233,6 +1240,7 @@ const UsdFormPage = () => {
                   type="radio"
                   name="agent"
                   id="agent"
+                  checked={formik.values.selectedAgent === "agent"}
                   onChange={handleRadioChange}
                 />
                 <label
@@ -1248,6 +1256,7 @@ const UsdFormPage = () => {
                   type="radio"
                   name="agent"
                   id="association"
+                  checked={formik.values.selectedAgent === "association"}
                   onChange={handleRadioChange}
                 />
                 <label
@@ -1261,7 +1270,7 @@ const UsdFormPage = () => {
                 </label>
               </div>
             </div>
-            {agentInputBox && (
+            {formik.values.agentState && (
               <div className="flex gap-5 px-5 py-5">
                 <div className="flex-1">
                   <label className="font-bold">
@@ -1271,7 +1280,7 @@ const UsdFormPage = () => {
                     <input
                       type="text"
                       placeholder="Agent Name"
-                      value={association.agentName}
+                      value={formik.values.agentState.agentName}
                       className="p-2 w-full mt-2 uppercase"
                       readOnly
                     />
@@ -1285,7 +1294,7 @@ const UsdFormPage = () => {
                     <input
                       type="text"
                       placeholder="Agent License Number"
-                      value={association.agentLicenseNumber}
+                      value={formik.values.agentState.agentLicenseNumber}
                       className="p-2 w-full mt-2 uppercase"
                       readOnly
                     />
@@ -1294,6 +1303,7 @@ const UsdFormPage = () => {
                 <div className="flex-1 mt-10">
                   <button
                     className="underline font-bold "
+                    type="button"
                     onClick={() => setIsModalAgentOpen(true)}
                   >
                     Edit
@@ -1301,7 +1311,7 @@ const UsdFormPage = () => {
                 </div>
               </div>
             )}
-            {associationInputBox && (
+            {formik.values.associationState && (
               <div className="flex gap-5 px-5 py-5">
                 <div className="flex-1">
                   <label className="font-bold">
@@ -1311,7 +1321,7 @@ const UsdFormPage = () => {
                     <input
                       type="text"
                       placeholder="Agent Name"
-                      value={agent.agentName}
+                      value={formik.values.associationState.agentName}
                       className="p-2 w-full mt-2 uppercase"
                     />
                   </div>
@@ -1324,7 +1334,7 @@ const UsdFormPage = () => {
                     <input
                       type="text"
                       placeholder="Agent License Number"
-                      value={agent.agentLicenseNumber}
+                      value={formik.values.associationState.agentLicenseNumber}
                       className="p-2 w-full mt-2 uppercase"
                     />
                   </div>
@@ -1332,6 +1342,7 @@ const UsdFormPage = () => {
                 <div className="flex-1 mt-10">
                   <button
                     className="underline font-bold "
+                    type="button"
                     onClick={() => setIsModalAssociationOpen(true)}
                   >
                     Edit
@@ -1383,7 +1394,7 @@ const UsdFormPage = () => {
               />
             </div>
           </div>
-          {agent === "error" && (
+          {formik.values.agentState === "error" && (
             <p className="text-red-600 mt-5 font-semibold">
               Please check again your "Agent Name" and "Agent License".
             </p>
@@ -1434,7 +1445,7 @@ const UsdFormPage = () => {
               />
             </div>
           </div>
-          {association === "error" && (
+          {formik.values.associationState === "error" && (
             <p className="text-red-600 mt-5 font-semibold">
               Please check again your "Agent License Number" and "Password".
             </p>

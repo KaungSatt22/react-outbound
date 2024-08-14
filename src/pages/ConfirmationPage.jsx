@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { formatCurrency } from "../ultils/formatCurrency";
 import { IoReturnUpBack } from "react-icons/io5";
 import ScrollTop from "../components/ScrollTop";
+import { Formik } from "formik";
 
 const ConfirmationPage = () => {
   const { insuredPerson } = useSelector(insuredPersonState);
@@ -84,6 +85,7 @@ const ConfirmationPage = () => {
       console.log(err.message);
     }
   };
+  console.log(Formik.values);
   useEffect(() => {
     getCountries();
   }, []);

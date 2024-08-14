@@ -32,10 +32,6 @@ const UsdFormPage = () => {
   const [isModalAssociationOpen, setIsModalAssociationOpen] = useState(false);
   const [isModalConfirmOpen, setIsModalConfirmOpen] = useState(false);
   const [countries, setCountries] = useState([]);
-  const [agent, setAgent] = useState({});
-  const [agentInputBox, setAgentInputBox] = useState(false);
-  const [associationInputBox, setAssociationInputBox] = useState(false);
-  const [association, setAssociation] = useState();
   const [premiumRate, setPremiumRate] = useState();
   const { insuredPerson } = useSelector(insuredPersonState);
   const formik = useFormik({
@@ -87,6 +83,9 @@ const UsdFormPage = () => {
       paymentMethod: insuredPerson?.paymentMethod || "mpu",
       agentId: insuredPerson?.agentId || "",
       buy: insuredPerson?.buy || "mmk",
+      selectedAgent: insuredPerson?.selectedAgent || "self",
+      agentState: insuredPerson?.agentState || "",
+      associationState: insuredPerson?.associationState || "",
     },
     validationSchema: validationSchema,
     onSubmit: () => {
@@ -110,13 +109,15 @@ const UsdFormPage = () => {
   const handleRadioChange = (event) => {
     if (event.target.id === "agent") {
       setIsModalAgentOpen(true);
+      formik.setFieldValue("selectedAgent", "agent");
     } else if (event.target.id === "association") {
+      formik.setFieldValue("selectedAgent", "association");
       setIsModalAssociationOpen(true);
+    } else {
+      formik.setFieldValue("selectedAgent", "self");
     }
-    setAgent("");
-    setAssociation("");
-    setAgentInputBox(false);
-    setAssociationInputBox(false);
+    formik.setFieldValue("agentState", "");
+    formik.setFieldValue("associationState", "");
     if (agentNameRef?.current?.value) {
       agentNameRef.current.value = "";
     }
@@ -152,15 +153,15 @@ const UsdFormPage = () => {
     }
   };
   const closeAgentModal = () => {
-    if (agent === "error") {
-      setAgent("");
+    if (formik.values.agentState === "error") {
+      formik.setFieldValue("agentState", "");
     }
     setIsModalAgentOpen(false);
   };
 
   const closeAssociationModal = () => {
-    if (association === "error") {
-      setAssociation("");
+    if (formik.values.associationState === "error") {
+      formik.setFieldValue("associationState", "");
     }
     setIsModalAssociationOpen(false);
   };
@@ -190,37 +191,39 @@ const UsdFormPage = () => {
     form.append("agentLicenseNumber", agentLicenseNumRef.current.value);
     try {
       const res = await getAgentBynameandLicNum(form);
-      setAgent(res.data === "" ? "error" : res.data);
+      formik.setFieldValue("agentState", res.data === "" ? "error" : res.data);
       formik.setFieldValue("agentId", res.data?.id);
       if (res.data) {
         closeAgentModal();
-        setAgentInputBox(true);
       }
     } catch (error) {
-      console.log(err);
+      console.log(error.message);
     }
   };
   const getAssociation = async () => {
     const form = new FormData();
     form.append("agentLicenseNumber", associationLicenseNumRef.current.value);
     form.append("password", associationPasswordRef.current.value);
-
     try {
       const res = await getAssociationByLicenseNumandPassword(form);
-      setAssociation(res.data === "" ? "error" : res.data);
+      formik.setFieldValue(
+        "associationState",
+        res.data === "" ? "error" : res.data
+      );
       formik.setFieldValue("agentId", res.data?.id);
       if (res.data) {
         closeAssociationModal();
-        setAssociationInputBox(true);
       }
     } catch (error) {
-      console.log(err);
+      console.log(error);
     }
   };
+  console.log(formik.values);
   const goto = () => {
     navigate("/confirm");
     dispatch(addInsuredPerson(formik.values));
   };
+
   return (
     <div className="bg-[#f0f4f9] py-10">
       <ScrollTop />
@@ -546,9 +549,9 @@ const UsdFormPage = () => {
                     ))}
                   </select>
                 </div>
-                {formik.touched.JourneyTo && formik.errors.JourneyTo ? (
+                {formik.touched.journeyTo && formik.errors.journeyTo ? (
                   <div className="text-red-500 font-semibold">
-                    {formik.errors.JourneyTo}
+                    {formik.errors.journeyTo}
                   </div>
                 ) : null}
               </div>
@@ -1223,7 +1226,7 @@ const UsdFormPage = () => {
                 <input
                   type="radio"
                   name="agent"
-                  defaultChecked
+                  checked={formik.values.selectedAgent === "self"}
                   id="self"
                   onChange={handleRadioChange}
                 />
@@ -1240,6 +1243,7 @@ const UsdFormPage = () => {
                   type="radio"
                   name="agent"
                   id="agent"
+                  checked={formik.values.selectedAgent === "agent"}
                   onChange={handleRadioChange}
                 />
                 <label
@@ -1255,6 +1259,7 @@ const UsdFormPage = () => {
                   type="radio"
                   name="agent"
                   id="association"
+                  checked={formik.values.selectedAgent === "association"}
                   onChange={handleRadioChange}
                 />
                 <label
@@ -1268,7 +1273,7 @@ const UsdFormPage = () => {
                 </label>
               </div>
             </div>
-            {agentInputBox && (
+            {formik.values.agentState && (
               <div className="flex gap-5 px-5 py-5">
                 <div className="flex-1">
                   <label className="font-bold">
@@ -1278,7 +1283,7 @@ const UsdFormPage = () => {
                     <input
                       type="text"
                       placeholder="Agent Name"
-                      value={agent.agentName}
+                      value={formik.values.agentState.agentName}
                       className="p-2 w-full mt-2 uppercase"
                       readOnly
                     />
@@ -1292,7 +1297,7 @@ const UsdFormPage = () => {
                     <input
                       type="text"
                       placeholder="Agent License Number"
-                      value={agent.agentLicenseNumber}
+                      value={formik.values.agentState.agentLicenseNumber}
                       className="p-2 w-full mt-2 uppercase"
                       readOnly
                     />
@@ -1309,7 +1314,7 @@ const UsdFormPage = () => {
                 </div>
               </div>
             )}
-            {associationInputBox && (
+            {formik.values.associationState && (
               <div className="flex gap-5 px-5 py-5">
                 <div className="flex-1">
                   <label className="font-bold">
@@ -1319,7 +1324,7 @@ const UsdFormPage = () => {
                     <input
                       type="text"
                       placeholder="Agent Name"
-                      value={association.agentName}
+                      value={formik.values.associationState.agentName}
                       className="p-2 w-full mt-2 uppercase"
                     />
                   </div>
@@ -1332,7 +1337,7 @@ const UsdFormPage = () => {
                     <input
                       type="text"
                       placeholder="Agent License Number"
-                      value={association.agentLicenseNumber}
+                      value={formik.values.associationState.agentLicenseNumber}
                       className="p-2 w-full mt-2 uppercase"
                     />
                   </div>
@@ -1392,7 +1397,7 @@ const UsdFormPage = () => {
               />
             </div>
           </div>
-          {agent === "error" && (
+          {formik.values.agentState === "error" && (
             <p className="text-red-600 mt-5 font-semibold">
               Please check again your "Agent Name" and "Agent License".
             </p>
@@ -1443,7 +1448,7 @@ const UsdFormPage = () => {
               />
             </div>
           </div>
-          {association === "error" && (
+          {formik.values.associationState === "error" && (
             <p className="text-red-600 mt-5 font-semibold">
               Please check again your "Agent License Number" and "Password".
             </p>
