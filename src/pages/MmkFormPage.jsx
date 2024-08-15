@@ -10,7 +10,7 @@ import CB from "../assets/cb_pay_icon.png";
 import OKDollar from "../assets/ok_dollar_icon.png";
 import Modal from "../components/Modal";
 import { GiConfirmed } from "react-icons/gi";
-import { useNavigate } from "react-router-dom";
+import { ScrollRestoration, useNavigate } from "react-router-dom";
 import { getAllCountry } from "../api/country";
 import {
   getAgentBynameandLicNum,
@@ -27,6 +27,7 @@ import { useFormik } from "formik";
 import { validationSchema } from "../ultils/Validation";
 import ScrollTop from "../components/ScrollTop";
 import { calculateage } from "../ultils/calculateage";
+import { FaArrowCircleUp } from "react-icons/fa";
 
 const UsdFormPage = () => {
   const [isModalAgentOpen, setIsModalAgentOpen] = useState(false);
@@ -193,7 +194,7 @@ const UsdFormPage = () => {
       formik.setFieldValue("agentState", res.data === "" ? "error" : res.data);
       formik.setFieldValue("agentId", res.data?.id);
       if (res.data) {
-        closeAgentModal();
+        setIsModalAgentOpen(false);
       }
     } catch (error) {
       console.log(error.message);
@@ -211,21 +212,33 @@ const UsdFormPage = () => {
       );
       formik.setFieldValue("agentId", res.data?.id);
       if (res.data) {
-        closeAssociationModal();
+        setIsModalAssociationOpen(false);
       }
     } catch (error) {
       console.log(error);
     }
   };
-  console.log(formik.values);
   const goto = () => {
     navigate("/confirm");
     dispatch(addInsuredPerson(formik.values));
   };
-
   return (
     <div className="bg-[#f0f4f9] py-10">
+      <ScrollRestoration />
       <ScrollTop />
+      <div
+        className="fixed right-16 bottom-7 cursor-pointer"
+        id="top"
+        onClick={() =>
+          window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: "smooth",
+          })
+        }
+      >
+        <FaArrowCircleUp size={40} />
+      </div>
       <form
         className="max-w-[1200px] mx-auto pb-10"
         onSubmit={formik.handleSubmit}
@@ -1403,7 +1416,7 @@ const UsdFormPage = () => {
           )}
         </div>
         <button
-          className="bg-[#074DA1] py-2 px-7 mt-5 text-white hover:bg-white rounded hover:text-[#074DA1] hover:border hover:border-[#074DA1] transition-all duration-500"
+          className="bg-[#074DA1] border py-2 px-7 mt-5 text-white hover:bg-white rounded hover:text-[#074DA1] hover:border hover:border-[#074DA1] transition-all duration-500"
           onClick={getAgent}
         >
           Check Agent
@@ -1455,7 +1468,7 @@ const UsdFormPage = () => {
         </div>
         <button
           type="button"
-          className="bg-[#074DA1] py-2 px-7 mt-5 text-white hover:bg-white rounded hover:text-[#074DA1] hover:border hover:border-[#074DA1] transition-all duration-500"
+          className="bg-[#074DA1] border py-2 px-7 mt-5 text-white hover:bg-white rounded hover:text-[#074DA1] hover:border hover:border-[#074DA1] transition-all duration-500"
           onClick={getAssociation}
         >
           Check Agent

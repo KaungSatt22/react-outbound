@@ -6,11 +6,10 @@ import {
 } from "../features/insuranceperson/personSlice";
 import { getAllCountry } from "../api/country";
 import { postInsuranced } from "../api/insuranced";
-import { useNavigate } from "react-router-dom";
+import { ScrollRestoration, useNavigate } from "react-router-dom";
 import { formatCurrency } from "../ultils/formatCurrency";
 import { IoReturnUpBack } from "react-icons/io5";
-import ScrollTop from "../components/ScrollTop";
-import { Formik } from "formik";
+import { FaArrowCircleUp } from "react-icons/fa";
 
 const ConfirmationPage = () => {
   const { insuredPerson } = useSelector(insuredPersonState);
@@ -85,7 +84,10 @@ const ConfirmationPage = () => {
       console.log(err.message);
     }
   };
-  console.log(Formik.values);
+  const handleCancel = () => {
+    dispatch(resetInsuredPerson());
+    navigate(-1);
+  };
   useEffect(() => {
     getCountries();
   }, []);
@@ -122,7 +124,20 @@ const ConfirmationPage = () => {
   const total = insuredPerson.rates + +serviceAmount;
   return (
     <div className="bg-[#f0f4f9] py-10 ">
-      <ScrollTop />
+      <ScrollRestoration />
+      <div
+        className="fixed right-16 bottom-7 cursor-pointer"
+        id="top"
+        onClick={() =>
+          window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: "smooth",
+          })
+        }
+      >
+        <FaArrowCircleUp size={40} />
+      </div>
       <div className="w-[1200px] mx-auto bg-white p-5 rounded text-[]">
         <div className="flex justify-end">
           <div
@@ -492,12 +507,20 @@ const ConfirmationPage = () => {
             </tbody>
           </table>
         </div>
-        <button
-          onClick={handleConfirm}
-          className="bg-[#074DA1] py-2 px-7 mt-5 text-white hover:bg-white rounded hover:text-[#074DA1] hover:border hover:border-[#074DA1] transition-all duration-500"
-        >
-          CONFIRM
-        </button>
+        <div className="flex gap-5">
+          <button
+            onClick={handleConfirm}
+            className="bg-[#074DA1] border py-2 px-7 mt-5 text-white hover:bg-white rounded hover:text-[#074DA1] hover:border hover:border-[#074DA1] transition-all duration-500"
+          >
+            CONFIRM
+          </button>
+          <button
+            onClick={handleCancel}
+            className="bg-red-500 border py-2 px-7 mt-5 text-white hover:bg-white rounded hover:text-red-500 hover:border hover:border-red-500 transition-all duration-500"
+          >
+            CANCEL
+          </button>
+        </div>
       </div>
     </div>
   );
